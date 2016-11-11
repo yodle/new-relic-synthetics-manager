@@ -1,0 +1,17 @@
+{
+  "name": "synthetic_manager",
+  "version": "1.0.0",
+  "description": "Manage New Relic Synthetics",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "David Bradford <dbradf@gmail.com>",
+  "license": "MIT",
+  "bin": {
+    "synthmanager": "synthmanager.js"
+  },
+  "dependencies": {
+    "selenium-webdriver": "^3.0.1"
+  }
+}
