@@ -5,4 +5,8 @@ This project has two goals:
 * Manage your New Relic Synthetics from the command line. Create new synthetics or update existing ones. This allows you to store the synthetics code under source code control.
 
 
+## Usages
+
+synthmanager import --all
+
 

@@ -7,4 +7,6 @@ const config = JSON.parse(
     fs.readFileSync(defaultConfigFile)
 );
 
-console.log(config.apikey);
+const nr = require('./lib/new_relic');
+
+nr.getAllSynthetics(config.apikey);
