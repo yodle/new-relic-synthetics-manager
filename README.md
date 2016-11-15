@@ -7,6 +7,13 @@ This project has two goals:
 
 ## Usages
 
-synthmanager import --all
+### Create a new synthetics
+
+```
+synthmanager create --name <synthetic_name> <filename>
+```
+
+Create a new synthetic based on the given file.
+
 
 

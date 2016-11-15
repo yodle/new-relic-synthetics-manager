@@ -4,14 +4,20 @@
   "description": "Manage New Relic Synthetics",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "David Bradford <dbradf@gmail.com>",
   "license": "MIT",
   "bin": {
-    "synthmanager": "synthmanager.js"
+    "synthmanager": "bin/synthmanager.js"
   },
   "dependencies": {
-    "selenium-webdriver": "^3.0.1"
+    "lodash": "^4.17.1",
+    "selenium-webdriver": "^3.0.1",
+    "yargs": "^6.4.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.1.2"
   }
 }
