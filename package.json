@@ -4,7 +4,7 @@
   "description": "Manage New Relic Synthetics",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --recursive"
   },
   "author": "David Bradford <dbradf@gmail.com>",
   "license": "Apache-2.0",
@@ -12,12 +12,15 @@
     "synthmanager": "bin/synthmanager.js"
   },
   "dependencies": {
+    "async": "^2.1.2",
     "lodash": "^4.17.1",
     "selenium-webdriver": "^3.0.1",
     "yargs": "^6.4.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "mocha": "^3.1.2"
+    "mocha": "^3.1.2",
+    "sinon": "^1.17.6",
+    "sinon-chai": "^2.8.0"
   }
 }
