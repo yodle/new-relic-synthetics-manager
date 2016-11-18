@@ -17,3 +17,11 @@ Create a new synthetic based on the given file.
 
 
 
+TODO
+
+* create synthetic template
+* update synthetic
+* track synthetics locally
+* import synthetics
+* include git information
+* 

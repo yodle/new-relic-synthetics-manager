@@ -1,22 +1,17 @@
+
 const dependencies = require('../../lib/dependency');
 
-exports.command = 'create';
-exports.desc = 'Create new synthetics monitor';
+exports.command = 'update';
+exports.desc = 'Update existing synthetics monitor';
 exports.builder = {
     name: {
         alias: 'n',
-        desc: 'Name of synthetic to create',
+        desc: 'Name of synthetic to update',
         demand: 1
     },
     filename: {
         alias: 'f',
-        desc: 'Filename to place sythetic code',
-        demand: 1
-    },
-    type: {
-        alias: 't',
-        desc: 'Type of synthetic to create',
-        default: 'SCRIPT_BROWSER'
+        desc: 'Filename to place sythetic code'
     },
     frequency: {
         desc: 'Frequency to run synthetic',
@@ -37,14 +32,18 @@ exports.builder = {
 
 exports.handler = function (argv) {
     const config = require('../../lib/config/SyntheticsConfig').getConfig();
-    console.log('create: ' + argv.name + ':' + argv.filename);
+    console.log('update: ' + argv.name + ':' + argv.filename);
     console.log(argv.type, argv.frequency, argv.locations, argv.status, argv.slaThreshold);
 
-    dependencies(config).createMonitorOrchestrator.createNewMonitor(
-        argv.name, 
-        argv.locations,
-        argv.type,
-        argv.frequency,
-        argv.filename
+    dependencies(config).syntheticsListFileService.addSynthetic(
+        "id2", "name2", "filename2"
     );
+
+    // dependencies(config).newRelicOrchestrator.createSynthetic(
+    //     argv.name, 
+    //     argv.locations,
+    //     argv.type,
+    //     argv.frequency,
+    //     argv.filename
+    // );
 }
