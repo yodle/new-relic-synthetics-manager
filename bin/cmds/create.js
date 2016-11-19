@@ -37,15 +37,9 @@ exports.builder = {
 }
 
 exports.handler = function (argv) {
-    if (argv.verbose) {
-        logger.level = 'verbose';
-    }
-    if (argv.debug) {
-        logger.level = 'debug';
-    }
+    require('../../lib/config/LoggingConfig')(argv);
 
     const config = require('../../lib/config/SyntheticsConfig').getConfig();
-
 
     logger.verbose('create: ' + argv.name + ':' + argv.filename);
     logger.verbose(argv);

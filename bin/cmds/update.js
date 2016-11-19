@@ -1,3 +1,4 @@
+const logger = require('winston');
 
 const dependencies = require('../../lib/dependency');
 
@@ -31,19 +32,14 @@ exports.builder = {
 }
 
 exports.handler = function (argv) {
+    require('../../lib/config/LoggingConfig')(argv);
+
     const config = require('../../lib/config/SyntheticsConfig').getConfig();
-    console.log('update: ' + argv.name + ':' + argv.filename);
-    console.log(argv.type, argv.frequency, argv.locations, argv.status, argv.slaThreshold);
+
+    logger.verbose('update: ' + argv.name + ':' + argv.filename);
+    logger.verbose(argv);
 
     dependencies(config).syntheticsListFileService.addSynthetic(
         "id2", "name2", "filename2"
     );
-
-    // dependencies(config).newRelicOrchestrator.createSynthetic(
-    //     argv.name, 
-    //     argv.locations,
-    //     argv.type,
-    //     argv.frequency,
-    //     argv.filename
-    // );
 }
