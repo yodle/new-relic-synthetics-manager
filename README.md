@@ -7,17 +7,35 @@ This project has two goals:
 
 ## Usages
 
-### Create a new synthetics
+### Create a new synthetic
 
 ```
-synthmanager create --name <synthetic_name> <filename>
+synthmanager create --name <synthetic_name> --file <filename>
 ```
 
-Create a new synthetic based on the given file.
+Create a synthetic in New Relic and a file to contain the synthetic code.
+
+### Update New Relic with synthetics code
+
+```
+synthmanager update --name <synthetic_name>
+```
+
+Update New Relic with the latest synthetic code for the specified synthetic.
+
+### Import a synthetic from New Relic
+
+```
+synthmanager import --name <synthetic_name> --id <synthetic_id> --file <filename>
+```
+
+Import an existing synthetic from New Relic.
 
 
 
-TODO
+
+
+## TODO
 
 * create synthetic template
 * update synthetic
