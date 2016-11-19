@@ -1,4 +1,5 @@
 const dependencies = require('../../lib/dependency');
+const logger = require('winston');
 
 exports.command = 'create';
 exports.desc = 'Create new synthetics monitor';
@@ -36,9 +37,18 @@ exports.builder = {
 }
 
 exports.handler = function (argv) {
+    if (argv.verbose) {
+        logger.level = 'verbose';
+    }
+    if (argv.debug) {
+        logger.level = 'debug';
+    }
+
     const config = require('../../lib/config/SyntheticsConfig').getConfig();
-    console.log('create: ' + argv.name + ':' + argv.filename);
-    console.log(argv.type, argv.frequency, argv.locations, argv.status, argv.slaThreshold);
+
+
+    logger.verbose('create: ' + argv.name + ':' + argv.filename);
+    logger.verbose(argv);
 
     dependencies(config).createMonitorOrchestrator.createNewMonitor(
         argv.name, 
