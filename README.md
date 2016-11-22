@@ -42,4 +42,3 @@ Import an existing synthetic from New Relic.
 * track synthetics locally
 * import synthetics
 * include git information
-* 
