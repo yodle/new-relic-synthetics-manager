@@ -1,67 +1,70 @@
-const sinon = require('sinon');
+const td = require('testdouble');
 const chai = require('chai');
-const sinonChai = require('sinon-chai');
+const tdChai = require('testdouble-chai');
 
 chai.should();
-chai.use(sinonChai);
-
+chai.use(tdChai(td));
 
 const createMonitorOrchestratorFactory = require('../../../lib/orchestrator/createMonitorOrchestrator');
 
 describe('CreateMonitorOrchestrator', function () {
 
-    const syntheticsFileServiceMock = {
-        exists: sinon.spy(),
-        createFile: sinon.spy()
-    };
+    const monitorName = 'Monitor Name';
+    const locations = ['location'];
+    const type = 'type';
+    const frequency = 10;
+    const expectedFilename = 'test.js';
 
-    const newRelicOrchestratorMock = {
-        createSynthetic: sinon.spy()
+    const newRelicServiceMock = {
+        createSynthetic: td.function()
     };
 
     const syntheticsListFileServiceMock = {
-        exists: sinon.spy(),
-        createFile: sinon.spy()
+        exists: td.function(),
+        createFile: td.function()
     };
 
-    const createMonitorOrchestrator = createMonitorOrchestratorFactory(
-        syntheticsFileServiceMock,
-        newRelicOrchestratorMock,
-        syntheticsListFileServiceMock
-    );
-
     it ('should create a synthetics file if it does not exist', function () {
-        const monitorName = 'Monitor Name';
-        const locations = [ 'location' ];
-        const type = 'type';
-        const frequency = 10;
-        const expectedFilename = 'test.js';
+        const syntheticsFileServiceMock = {
+            exists: td.function(),
+            createFile: td.function()
+        };
 
-        syntheticsFileServiceMock.exists = function (filename, callback) {
-            filename.should.equal(expectedFilename);
-            callback(false);
-        }
+        td.when(syntheticsFileServiceMock.exists(expectedFilename, td.callback)).thenCallback(false);
+
+        const createMonitorOrchestrator = createMonitorOrchestratorFactory(
+            syntheticsFileServiceMock,
+            newRelicServiceMock,
+            syntheticsListFileServiceMock
+        );
 
         createMonitorOrchestrator.createNewMonitor(monitorName, locations, type, frequency, expectedFilename);
 
-        syntheticsFileServiceMock.createFile.should.have.been.calledWith(expectedFilename);
+        syntheticsFileServiceMock.createFile.should.have.been.calledWith(
+            expectedFilename,
+            td.matchers.isA(String),
+            td.callback
+        );
     });
 
     it ('should not create a synthetics file if it does exist', function () {
-        const monitorName = 'Monitor Name';
-        const locations = [ 'location' ];
-        const type = 'type';
-        const frequency = 10;
-        const expectedFilename = 'test.js';
+        const syntheticsFileServiceMock = {
+            exists: td.function(),
+            createFile: td.function()
+        };
 
-        syntheticsFileServiceMock.exists = function (filename, callback) {
-            filename.should.equal(expectedFilename);
-            callback(true);
-        }
+        td.when(syntheticsFileServiceMock.exists(expectedFilename, td.callback)).thenCallback(true);
+
+        const createMonitorOrchestrator = createMonitorOrchestratorFactory(
+            syntheticsFileServiceMock,
+            newRelicServiceMock,
+            syntheticsListFileServiceMock
+        );
+
 
         createMonitorOrchestrator.createNewMonitor(monitorName, locations, type, frequency, expectedFilename);
 
-        syntheticsFileServiceMock.createFile.should.not.have.been.calledWith(expectedFilename);
+        syntheticsFileServiceMock.createFile.should.not.have.been.called;
     });
 
 });

@@ -1,10 +1,9 @@
-const sinon = require('sinon');
 const td = require('testdouble');
 const chai = require('chai');
-const sinonChai = require('sinon-chai');
+const tdChai = require('testdouble-chai');
 
 const should = chai.should();
-chai.use(sinonChai);
+chai.use(tdChai(td));
 
 const syntheticsListFileServiceFactory = require('../../../lib/service/SyntheticsListFileService');
 
@@ -21,13 +20,29 @@ describe('SyntheticsListFileService', function () {
                 filename.should.equals(expectedSyntheticsListFile);
                 callback(false);
             },
-            writeFile: sinon.spy()
+            writeFile: td.function(),
+            getFileContent: td.function()
         }
+
+        td.when(fileServiceMock.writeFile(
+            td.matchers.isA(String),
+            td.matchers.isA(String),
+            td.callback
+        )).thenCallback(null);
+
+        td.when(fileServiceMock.getFileContent(
+            td.matchers.isA(String),
+            td.callback
+        )).thenCallback('{}');
 
         const syntheticsListFileService = syntheticsListFileServiceFactory(expectedSyntheticsListFile, fileServiceMock);
 
         syntheticsListFileService.addSynthetic(expectedSyntheticId, expectedSynthetic, expectedSyntheticFilename, function () {
-            fileService.writeFile.should.have.been.called();
+            fileServiceMock.writeFile.should.have.been.calledWith(
+                expectedSyntheticsListFile, 
+                td.matchers.isA(String),
+                td.callback
+            );
         });
     });
 
@@ -37,17 +52,27 @@ describe('SyntheticsListFileService', function () {
                 filename.should.equal(expectedSyntheticsListFile);
                 callback(true);
             },
-            writeFile: sinon.spy(),
+            writeFile: td.function(),
             getFileContent: function (filename, callback) {
                 filename.should.equal(expectedSyntheticsListFile);
                 callback('{}');
             }
         }
 
+        td.when(fileServiceMock.writeFile(
+            td.matchers.isA(String),
+            td.matchers.isA(String),
+            td.callback
+        )).thenCallback(null);
+
         const syntheticsListFileService = syntheticsListFileServiceFactory(expectedSyntheticsListFile, fileServiceMock);
 
         syntheticsListFileService.addSynthetic(expectedSyntheticId, expectedSynthetic, expectedSyntheticFilename, function () {
-            fileService.writeFile.should.not.have.been.called();
+            fileServiceMock.writeFile.should.not.have.been.calledWith(
+                expectedSyntheticsListFile,
+                '{}',
+                td.callback
+            );
         });
     });
 
