@@ -6,18 +6,16 @@ const sinonChai = require('sinon-chai');
 const should = chai.should();
 chai.use(sinonChai);
 
-
 const syntheticsListFileServiceFactory = require('../../../lib/service/SyntheticsListFileService');
 
 describe('SyntheticsListFileService', function () {
+    const expectedSyntheticId = 'syntheticId';
+    const expectedSynthetic = 'syntheticName';
+    const expectedSyntheticFilename = 'filename.js';
+
+    const expectedSyntheticsListFile = 'syntheticslist.json';
 
     it ('should create Synthetics List File if it does not exist', function () {
-        const expectedSyntheticId = 'syntheticId';
-        const expectedSynthetic = 'syntheticName';
-        const expectedSyntheticFilename = 'filename.js';
-
-        const expectedSyntheticsListFile = 'syntheticslist.json';
-
         const fileServiceMock = {
             exists: function (filename, callback) {
                 filename.should.equals(expectedSyntheticsListFile);
@@ -34,12 +32,6 @@ describe('SyntheticsListFileService', function () {
     });
 
     it ('should not create Synthetics List File if it does exist', function () {
-        const expectedSyntheticId = 'syntheticId';
-        const expectedSynthetic = 'syntheticName';
-        const expectedSyntheticFilename = 'filename.js';
-
-        const expectedSyntheticsListFile = 'syntheticslist.json';
-
         const fileServiceMock = {
             exists: function (filename, callback) {
                 filename.should.equal(expectedSyntheticsListFile);
@@ -60,12 +52,6 @@ describe('SyntheticsListFileService', function () {
     });
 
     it ('should add a synthetic to the file', function () {
-        const expectedSyntheticId = 'syntheticId';
-        const expectedSynthetic = 'syntheticName';
-        const expectedSyntheticFilename = 'filename.js';
-
-        const expectedSyntheticsListFile = 'syntheticslist.json';
-
         const fileServiceMock = {
             exists: function (filename, callback) {
                 filename.should.equal(expectedSyntheticsListFile);
@@ -96,12 +82,6 @@ describe('SyntheticsListFileService', function () {
     })
 
     it ('should return synthetic info for existing synthetic', function () {
-        const expectedSyntheticId = 'syntheticId';
-        const expectedSynthetic = 'syntheticName';
-        const expectedSyntheticFilename = 'filename.js';
-
-        const expectedSyntheticsListFile = 'syntheticslist.json';
-
         const fileServiceMock = {
             exists: function (filename, callback) {
                 filename.should.equal(expectedSyntheticsListFile);
@@ -129,12 +109,6 @@ describe('SyntheticsListFileService', function () {
     });
 
     it ('should throw an error trying to add an existing synthetic', function () {
-        const expectedSyntheticId = 'syntheticId';
-        const expectedSynthetic = 'syntheticName';
-        const expectedSyntheticFilename = 'filename.js';
-
-        const expectedSyntheticsListFile = 'syntheticslist.json';
-
         const fileServiceMock = {
             exists: function (filename, callback) {
                 filename.should.equal(expectedSyntheticsListFile);
@@ -160,9 +134,39 @@ describe('SyntheticsListFileService', function () {
                 expectedSyntheticId,
                 expectedSynthetic,
                 expectedSyntheticFilename,
-                function (syntheticInfo) { }
+                function (syntheticInfo) {}
             );
         }).should.throw('Synthetic[' + expectedSynthetic + '] already exists');
     });
 
+    it ('should throw an error trying to retrieve a synthetic that does not exist', function () {
+        const unknownSynthetic = 'notInFileSynthetic';
+
+        const fileServiceMock = {
+            exists: function (filename, callback) {
+                filename.should.equal(expectedSyntheticsListFile);
+                callback(true);
+            },
+            writeFile: td.function(),
+            getFileContent: function (filename, callback) {
+                filename.should.equal(expectedSyntheticsListFile);
+                callback(JSON.stringify({
+                    syntheticName: {
+                        id: expectedSyntheticId,
+                        filename: expectedSyntheticFilename
+                    }
+                })
+                );
+            }
+        };
+
+        const syntheticsListFileService = syntheticsListFileServiceFactory(expectedSyntheticsListFile, fileServiceMock);
+
+        (function () {
+            syntheticsListFileService.getSynthetic(
+                unknownSynthetic,
+                function (syntheticInfo) {}
+            );
+        }).should.throw('Could not find info for synthetic: ' + unknownSynthetic);
+    });
 });
