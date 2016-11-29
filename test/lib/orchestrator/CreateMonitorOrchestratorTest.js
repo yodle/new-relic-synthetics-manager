@@ -5,7 +5,7 @@ const tdChai = require('testdouble-chai');
 chai.should();
 chai.use(tdChai(td));
 
-const createMonitorOrchestratorFactory = require('../../../lib/orchestrator/createMonitorOrchestrator');
+const createMonitorOrchestratorFactory = require('../../../lib/orchestrator/CreateMonitorOrchestrator');
 
 describe('CreateMonitorOrchestrator', function () {
 
