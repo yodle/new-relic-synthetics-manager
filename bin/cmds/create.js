@@ -28,12 +28,6 @@ exports.builder = {
         default: ['AWS_US_WEST_1']
 
     },
-    status: {
-        desc: ''
-    },
-    slaThreshold: {
-        desc: ''
-    }
 }
 
 exports.handler = function (argv) {
@@ -41,7 +35,7 @@ exports.handler = function (argv) {
 
     const config = require('../../lib/config/SyntheticsConfig').getConfig();
 
-    logger.verbose('create: ' + argv.name + ':' + argv.filename);
+    logger.verbose('Create: ' + argv.name + ':' + argv.filename);
     logger.verbose(argv);
 
     dependencies(config).createMonitorOrchestrator.createNewMonitor(
