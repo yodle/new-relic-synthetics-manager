@@ -16,11 +16,50 @@ The synthetics-manager library provides the setup needed to simulate the environ
 
 ## Getting Started
 
-Install the synthmanager command via npm to allow you to use the command line tool
+Install the synthmanager command via npm to allow you to use the command line tool:
 ```
-npm install synthetics_manager -g
+$ npm install synthetics_manager -g
 ```
 
+Next, create an npm project to store our synthetics:
+```
+$ mkdir syntheticsProject
+$ cd syntheticsProject
+$ npm init
+```
+
+After creating a project, add synthetics_manager as a dependency:
+```
+$ npm install synthetics_manager --save
+```
+
+Now, new synthetics can be created with the 'synthmanager create' command:
+```
+$ synthmanager create --name "New Synthetic Name" --filename newSyntheticName.js
+```
+
+This will create the synthetic in New Relic and create a js file with the specified name under the synthetics directory. The js file has some basic setup needed to run the synthetic locally.
+
+After, when the synthetics code has been completed, it can be uploaded to New Relic with the 'synthmanager update' command: 
+```
+$ synthmanager update --name "New Synthetic Name"
+```
+
+## Running Synthetics locally
+
+### Prerequisites
+
+New Relic runs synthetics using the chrome web browser. So that is the recommended way to run them locally. In order to run them, the following need to be setup:
+* Chrome Web browser
+* Selenium Server (http://www.seleniumhq.org/download/), should be running
+* Chrome Driver (https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver), should be in the path
+
+### Running Synthetics
+
+Once the prerequisites are installed and a synthetic is created, it can be run locally. This can be done with an IDE or using node:
+```
+$ node synthetics/newSyntheticName.js
+```
 
 ## Command Line Usage
 
@@ -47,12 +86,6 @@ synthmanager import --name <synthetic_name> --id <synthetic_id> --file <filename
 ```
 
 Import an existing synthetic from New Relic.
-
-## Running Synthetics locally
-
-### Prerequisites
-
-
 
 
 
