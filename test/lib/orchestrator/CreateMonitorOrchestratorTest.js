@@ -8,12 +8,17 @@ chai.use(tdChai(td));
 const createMonitorOrchestratorFactory = require('../../../lib/orchestrator/CreateMonitorOrchestrator');
 
 describe('CreateMonitorOrchestrator', function () {
+    const initialSyntheticsContent = '// initial Synthetics Content';
 
     const monitorName = 'Monitor Name';
     const locations = ['location'];
     const type = 'type';
     const frequency = 10;
     const expectedFilename = 'test.js';
+
+    const defaultsMock = {
+        syntheticsContent: initialSyntheticsContent
+    };
 
     const newRelicServiceMock = {
         createSynthetic: td.function()
@@ -36,7 +41,8 @@ describe('CreateMonitorOrchestrator', function () {
         const createMonitorOrchestrator = createMonitorOrchestratorFactory(
             syntheticsFileServiceMock,
             newRelicServiceMock,
-            syntheticsListFileServiceMock
+            syntheticsListFileServiceMock,
+            defaultsMock
         );
 
         createMonitorOrchestrator.createNewMonitor(monitorName, locations, type, frequency, expectedFilename);
@@ -59,7 +65,8 @@ describe('CreateMonitorOrchestrator', function () {
         const createMonitorOrchestrator = createMonitorOrchestratorFactory(
             syntheticsFileServiceMock,
             newRelicServiceMock,
-            syntheticsListFileServiceMock
+            syntheticsListFileServiceMock,
+            defaultsMock
         );
 
         createMonitorOrchestrator.createNewMonitor(monitorName, locations, type, frequency, expectedFilename);
@@ -94,7 +101,8 @@ describe('CreateMonitorOrchestrator', function () {
         const createMonitorOrchestrator = createMonitorOrchestratorFactory(
             syntheticsFileServiceMock,
             newRelicServiceMock,
-            syntheticsListFileServiceMock
+            syntheticsListFileServiceMock,
+            defaultsMock
         );
 
         createMonitorOrchestrator.createNewMonitor(monitorName, locations, type, frequency, expectedFilename, function () {
