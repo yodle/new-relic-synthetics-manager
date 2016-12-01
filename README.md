@@ -14,6 +14,10 @@ The synthmanager command line tool allows the create, update and import syntheti
 
 The synthetics-manager library provides the setup needed to simulate the environment that synthetics are run in New Relic. This is added to your synthetics with "require ('synthetics_manager')" line of code at the top of your local synthetics script. This line should NOT be removed or changed. It is automatically striped out of the synthetic code when it is uploaded to New Relic.
 
+### Important Note
+
+The synthmanager command line tool makes calls to the New Relic Synthetics API, which is rate limited at 3 requests per second. Each run of the command will only make one or two calls, so a single run should not be a problem. But if commands are run in parallel or in rapid succession, the rate limit could be hit. This is especially important if the tool is added to a CI/CD system.
+
 ## Getting Started
 
 Install the synthmanager command via npm to allow you to use the command line tool:
@@ -62,6 +66,14 @@ $ node synthetics/newSyntheticName.js
 ```
 
 ## Command Line Usage
+
+### Global options
+
+These options can be used with any command:
+
+* --apikey - Specify API key to use to access New Relic.
+* --verbose - Provide verbose logging output.
+* --debug - Provide debug logging output.
 
 ### Create a new synthetic
 

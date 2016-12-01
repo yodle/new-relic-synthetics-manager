@@ -11,7 +11,7 @@ exports.builder = {
     },
     filename: {
         alias: 'f',
-        desc: 'Filename to place sythetic code',
+        desc: 'Filename to place synthetic code',
         demand: 1
     },
     type: {
