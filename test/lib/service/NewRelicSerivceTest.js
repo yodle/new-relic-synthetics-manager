@@ -82,18 +82,16 @@ describe('NewRelicService', function () {
 
         const newRelicService = newRelicServiceFactory(expectedApiKey, httpMock);
 
-        (function () {
-            newRelicService.createSynthetic(
-                expectedName,
-                expectedLocations,
-                expectedType,
-                expectedFrequency,
-                expectedStatus,
-                function (syntheticUrl) {
-                    syntheticUrl.should.equals(expectedUrl);
-                }
-            );
-        }).should.throw('Error creating synthetic: ' + expectedStatusMessage);
+        newRelicService.createSynthetic(
+            expectedName,
+            expectedLocations,
+            expectedType,
+            expectedFrequency,
+            expectedStatus,
+            function(syntheticUrl, err) {
+                err.should.equal('Error creating synthetic: ' + expectedStatusMessage);
+            }
+        );
     });
 
     it ('should PUT to NR when updating a synthetic', function () {
@@ -153,12 +151,12 @@ describe('NewRelicService', function () {
 
         const newRelicService = newRelicServiceFactory(expectedApiKey, httpMock);
 
-        (function () {
-            newRelicService.updateMonitorScript(
-                expectedId,
-                expectedContent,
-                function () {}
-            );
-        }).should.throw('Error updating synthetic: ' + expectedStatusMessage);
+        newRelicService.updateMonitorScript(
+            expectedId,
+            expectedContent,
+            function(err) {
+                err.should.equal('Error updating synthetic: ' + expectedStatusMessage);
+            }
+        );
     });
 });

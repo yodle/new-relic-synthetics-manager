@@ -133,7 +133,7 @@ describe('SyntheticsListFileService', function () {
         });
     });
 
-    it ('should throw an error trying to add an existing synthetic', function () {
+    it ('should give an error trying to add an existing synthetic', function () {
         const fileServiceMock = {
             exists: function (filename, callback) {
                 filename.should.equal(expectedSyntheticsListFile);
@@ -147,24 +147,23 @@ describe('SyntheticsListFileService', function () {
                         id: expectedSyntheticId,
                         filename: expectedSyntheticFilename
                     }
-                })
-                );
+                }));
             }
         };
 
         const syntheticsListFileService = syntheticsListFileServiceFactory(expectedSyntheticsListFile, fileServiceMock);
 
-        (function () {
-            syntheticsListFileService.addSynthetic(
-                expectedSyntheticId,
-                expectedSynthetic,
-                expectedSyntheticFilename,
-                function (syntheticInfo) {}
-            );
-        }).should.throw('Synthetic[' + expectedSynthetic + '] already exists');
+        syntheticsListFileService.addSynthetic(
+            expectedSyntheticId,
+            expectedSynthetic,
+            expectedSyntheticFilename,
+            function (err) {
+                err.should.equal('Synthetic[' + expectedSynthetic + '] already exists');
+            }
+        );
     });
 
-    it ('should throw an error trying to retrieve a synthetic that does not exist', function () {
+    it ('should give an error trying to retrieve a synthetic that does not exist', function () {
         const unknownSynthetic = 'notInFileSynthetic';
 
         const fileServiceMock = {
@@ -180,18 +179,17 @@ describe('SyntheticsListFileService', function () {
                         id: expectedSyntheticId,
                         filename: expectedSyntheticFilename
                     }
-                })
-                );
+                }));
             }
         };
 
         const syntheticsListFileService = syntheticsListFileServiceFactory(expectedSyntheticsListFile, fileServiceMock);
 
-        (function () {
-            syntheticsListFileService.getSynthetic(
-                unknownSynthetic,
-                function (syntheticInfo) {}
-            );
-        }).should.throw('Could not find info for synthetic: ' + unknownSynthetic);
+        syntheticsListFileService.getSynthetic(
+            unknownSynthetic,
+            function (syntheticInfo, err) {
+                err.should.equal('Could not find info for synthetic: ' + unknownSynthetic);
+            }
+        );
     });
 });

@@ -56,7 +56,7 @@ describe('SyntheticsFileService', function () {
         });
     });
 
-    it ('should get file contents offset by 45 characters', function () {
+    it ('should get file contents offset by size of file contents', function () {
         const expectedFileContents = 'file\ncontents\nhere';
 
         const fileServiceMock = {

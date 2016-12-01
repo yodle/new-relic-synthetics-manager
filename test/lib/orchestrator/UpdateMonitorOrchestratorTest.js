@@ -9,27 +9,65 @@ const updateMonitorOrchestratorFactory = require('../../../lib/orchestrator/Upda
 
 describe('UpdateMonitorOrchestrator', function () {
     const expectedSyntheticName = 'SyntheticName';
+    const expectedFilename = 'syntheticFilename.js';
 
-    const syntheticListFileSerivceMock = {
-        getSynthetic: td.function()
-    };
-    const syntheticFileServiceMock = {
-        getSynthetic: td.function()
-    };
-    const newRelicServiceMock = {};
 
     it ('should fail if no synthetic list file exists', function() {
+        const syntheticListFileServiceMock = {
+            getSynthetic: td.function()
+        };
+        const syntheticFileServiceMock = {
+            getBase64File: td.function()
+        };
+        const newRelicServiceMock = {};
+
         const updateMonitorOrchestrator = updateMonitorOrchestratorFactory(
-            syntheticListFileSerivceMock,
+            syntheticListFileServiceMock,
             syntheticFileServiceMock,
             newRelicServiceMock
         );
 
-        td.when(syntheticFileServiceMock.getSynthetic(
+        td.when(syntheticListFileServiceMock.getSynthetic(
             td.matchers.isA(String),
             td.callback
-        )).thenThrow(new Error('synthetic not found'));
+        )).thenCallback(null, 'synthetic not found');
 
-        updateMonitorOrchestrator.updateSynthetic(expectedSyntheticName);
+        (function () {
+            updateMonitorOrchestrator.updateSynthetic(expectedSyntheticName);
+        }).should.throw('synthetic not found');
+    });
+
+    it ('should fail if no synthetic file can be found', function() {
+        const syntheticListFileServiceMock = {
+            getSynthetic: td.function()
+        };
+        const syntheticFileServiceMock = {
+            getBase64File: td.function()
+        };
+        const newRelicServiceMock = {};
+
+        const updateMonitorOrchestrator = updateMonitorOrchestratorFactory(
+            syntheticListFileServiceMock,
+            syntheticFileServiceMock,
+            newRelicServiceMock
+        );
+
+        const syntheticInfoMock = {
+            filename: expectedFilename
+        };
+
+        td.when(syntheticListFileServiceMock.getSynthetic(
+            td.matchers.isA(String),
+            td.callback
+        )).thenCallback(syntheticInfoMock);
+
+        td.when(syntheticFileServiceMock.getBase64File(
+            td.matchers.isA(String),
+            td.callback
+        )).thenCallback(null, 'synthetic file not found');
+
+        (function () {
+            updateMonitorOrchestrator.updateSynthetic(expectedSyntheticName);
+        }).should.throw('synthetic file not found');
     });
 });
