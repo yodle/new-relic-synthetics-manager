@@ -70,6 +70,10 @@ synthmanager create --name <synthetic_name> --file <filename>
 ```
 
 Create a synthetic in New Relic and a file to contain the synthetic code.
+* --name <synthetic_name> - Name of synthetic. This is the name used in New Relic as well as how it should be refered to by other commands
+* --file <filename> - Filename where the synthethics code should go. This file will be created under the 'synthetics' directory. The file should not already exist.
+* --frequency <frequency> - Frequency to run the synthetic in minutes. This should be an integer. Possible values are:  1, 5, 10, 15, 30, 60, 360, 720, or 1440.
+* --locations <location> - Locations to run the synthetic. This can be specified multiple times to specify multiple locations.
 
 ### Update New Relic with synthetics code
 
@@ -78,6 +82,7 @@ synthmanager update --name <synthetic_name>
 ```
 
 Update New Relic with the latest synthetic code for the specified synthetic.
+* --name <synthetic_name> - name of synthetic to update. This should be the name used when the synthetic was created.
 
 ### Import a synthetic from New Relic
 
@@ -86,6 +91,15 @@ synthmanager import --name <synthetic_name> --id <synthetic_id> --file <filename
 ```
 
 Import an existing synthetic from New Relic.
+
+## Configuration
+
+Configuration options can be changed by adding a 'synthetics.config.json' file in the base of the project. 
+
+Available configuration options are:
+* apikey - Synthetics API key (Note: There may be security issues storing this value in a file).
+* syntheticsDirectory - Directory to store synthetics file in (default: './synthetics/').
+* syntheticsListFile - File to store information about created synthetics in (default: './synthetics.json').
 
 
 

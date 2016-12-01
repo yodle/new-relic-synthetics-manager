@@ -26,14 +26,13 @@ exports.builder = {
     locations: {
         desc: 'Locations to run synthetic',
         default: ['AWS_US_WEST_1']
-
     },
 }
 
 exports.handler = function (argv) {
     require('../../lib/config/LoggingConfig')(argv);
 
-    const config = require('../../lib/config/SyntheticsConfig').getConfig();
+    const config = require('../../lib/config/SyntheticsConfig').getConfig(argv);
 
     logger.verbose('Create: ' + argv.name + ':' + argv.filename);
     logger.verbose(argv);

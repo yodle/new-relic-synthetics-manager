@@ -15,7 +15,7 @@ exports.builder = {
 exports.handler = function (argv) {
     require('../../lib/config/LoggingConfig')(argv);
 
-    const config = require('../../lib/config/SyntheticsConfig').getConfig();
+    const config = require('../../lib/config/SyntheticsConfig').getConfig(argv);
 
     logger.verbose('Update: ' + argv.name);
     logger.verbose(argv);
