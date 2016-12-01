@@ -37,7 +37,7 @@ describe('UpdateMonitorOrchestrator', function () {
         }).should.throw('synthetic not found');
     });
 
-    it ('should fail if no synthetic file can be found', function() {
+    it ('should fail if no synthetic file can be found', function () {
         const syntheticListFileServiceMock = {
             getSynthetic: td.function()
         };
@@ -69,5 +69,55 @@ describe('UpdateMonitorOrchestrator', function () {
         (function () {
             updateMonitorOrchestrator.updateSynthetic(expectedSyntheticName);
         }).should.throw('synthetic file not found');
+    });
+
+    it ('should upload synthetic content to New Relic', function () {
+        const expectedSyntheticContent = 'synthetic\ncontent';
+        const expectedSyntheticId = 'syntheticId';
+
+        const syntheticListFileServiceMock = {
+            getSynthetic: td.function()
+        };
+        const syntheticFileServiceMock = {
+            getBase64File: td.function()
+        };
+        const newRelicServiceMock = {
+            updateMonitorScript: td.function()
+        };
+
+        const updateMonitorOrchestrator = updateMonitorOrchestratorFactory(
+            syntheticListFileServiceMock,
+            syntheticFileServiceMock,
+            newRelicServiceMock
+        );
+
+        const syntheticInfoMock = {
+            filename: expectedFilename,
+            id: expectedSyntheticId
+        };
+
+        td.when(syntheticListFileServiceMock.getSynthetic(
+            td.matchers.isA(String),
+            td.callback
+        )).thenCallback(syntheticInfoMock);
+
+        td.when(syntheticFileServiceMock.getBase64File(
+            td.matchers.isA(String),
+            td.callback
+        )).thenCallback(new Buffer(expectedSyntheticContent), null);
+
+        td.when(newRelicServiceMock.updateMonitorScript(
+            td.matchers.isA(String),
+            td.matchers.isA(String),
+            td.callback
+        )).thenCallback();
+
+        updateMonitorOrchestrator.updateSynthetic(expectedSyntheticName);
+
+        newRelicServiceMock.updateMonitorScript.should.have.been.calledWith(
+            syntheticInfoMock.id,
+            new Buffer(expectedSyntheticContent),
+            td.callback
+        );
     });
 });
