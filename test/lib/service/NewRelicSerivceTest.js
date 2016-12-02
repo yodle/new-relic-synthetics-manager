@@ -11,7 +11,6 @@ describe('NewRelicService', function () {
     const expectedApiKey = 'apikey';
     const expectedName = 'syntheticName';
     const expectedLocations = ['location1'];
-    const expectedType = 'BROWSER_SCRIPT';
     const expectedFrequency = 10;
     const expectedStatus = 'DISABLED';
     const expectedUrl = 'http://newrelic/id';
@@ -46,7 +45,6 @@ describe('NewRelicService', function () {
         newRelicService.createSynthetic(
             expectedName,
             expectedLocations,
-            expectedType,
             expectedFrequency,
             expectedStatus,
             function (syntheticUrl) {
@@ -85,7 +83,6 @@ describe('NewRelicService', function () {
         newRelicService.createSynthetic(
             expectedName,
             expectedLocations,
-            expectedType,
             expectedFrequency,
             expectedStatus,
             function(syntheticUrl, err) {

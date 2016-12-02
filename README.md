@@ -84,7 +84,7 @@ synthmanager create --name <synthetic_name> --file <filename>
 Create a synthetic in New Relic and a file to contain the synthetic code.
 * --name <synthetic_name> - Name of synthetic. This is the name used in New Relic as well as how it should be refered to by other commands
 * --file <filename> - Filename where the synthethics code should go. This file will be created under the 'synthetics' directory. The file should not already exist.
-* --frequency <frequency> - Frequency to run the synthetic in minutes. This should be an integer. Possible values are:  1, 5, 10, 15, 30, 60, 360, 720, or 1440.
+* --frequency <frequency> - Frequency to run the synthetic in minutes. This should be an integer. Possible values are:  1, 5, 10, 15, 30, 60, 360, 720, or 1440. The default is 10.
 * --locations <location> - Locations to run the synthetic. This can be specified multiple times to specify multiple locations.
 
 ### Update New Relic with synthetics code

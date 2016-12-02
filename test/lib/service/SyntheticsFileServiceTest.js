@@ -21,7 +21,8 @@ describe('SyntheticsFileService', function () {
         const expectedContents = 'Contents\nof\nthe\nfile';
 
         const fileServiceMock = {
-            writeFile: td.function()
+            writeFile: td.function(),
+            exists: td.function()
         };
 
         td.when(fileServiceMock.writeFile(
@@ -29,6 +30,11 @@ describe('SyntheticsFileService', function () {
             td.matchers.isA(String),
             td.callback
         )).thenCallback(null);
+
+        td.when(fileServiceMock.exists(
+            td.matchers.isA(String),
+            td.callback
+        )).thenCallback(true);
 
         const syntheticsFileService = syntheticsFileServiceFactory(expectedDirectory, fileServiceMock, defaultsMock);
         

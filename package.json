@@ -15,6 +15,8 @@
   "dependencies": {
     "async": "^2.1.2",
     "lodash": "^4.17.1",
+    "mkdirp": "^0.5.1",
+    "request": "^2.79.0",
     "selenium-webdriver": "^3.0.1",
     "winston": "^2.3.0",
     "yargs": "^6.4.0"
