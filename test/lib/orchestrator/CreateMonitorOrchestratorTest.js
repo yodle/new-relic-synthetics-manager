@@ -87,7 +87,6 @@ describe('CreateMonitorOrchestrator', function () {
         td.when(newRelicServiceMock.createSynthetic(
             td.matchers.isA(String),
             td.matchers.isA(Array),
-            td.matchers.isA(String),
             td.matchers.isA(Number),
             td.matchers.isA(String),
             td.callback
@@ -109,7 +108,6 @@ describe('CreateMonitorOrchestrator', function () {
             newRelicServiceMock.createSynthetic.should.have.been.calledWith(
                 monitorName,
                 locations,
-                type,
                 frequency,
                 'DISABLED',
                 td.callback

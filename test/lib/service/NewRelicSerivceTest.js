@@ -156,4 +156,68 @@ describe('NewRelicService', function () {
             }
         );
     });
+
+    it ('should return an error if New Relic throws an error getting a synthetic', () => {
+        const expectedSyntheticId = 'syntheticId';
+        const expectedError = 'error retrieving synthetic';
+
+        const requestMock = td.function();
+        const httpMock = {};
+
+        td.when(requestMock(
+            td.matchers.isA(Object),
+            td.callback
+        )).thenCallback(expectedError);
+
+        const newRelicService = newRelicServiceFactory(expectedApiKey, httpMock, requestMock);
+
+        newRelicService.getSynthetic(expectedSyntheticId, (body, err) => {
+            err.should.be.equal(expectedError);
+        });
+    });
+
+    it ('should return an error if New Relic cannot find the synthetic', () => {
+        const expectedStatusCode = 404;
+        const expectedSyntheticId = 'syntheticId';
+        const expectedError = 'Error retrieving synthetic: '  + expectedStatusCode;
+
+        const requestMock = td.function();
+        const httpMock = {};
+        const responseMock = {
+            statusCode: expectedStatusCode
+        };
+
+        td.when(requestMock(
+            td.matchers.isA(Object),
+            td.callback
+        )).thenCallback(null, responseMock);
+
+        const newRelicService = newRelicServiceFactory(expectedApiKey, httpMock, requestMock);
+
+        newRelicService.getSynthetic(expectedSyntheticId, (body, err) => {
+            err.should.be.equal(expectedError);
+        });
+    });
+
+    it ('should return synthetic info from New Relic', () => {
+        const expectedBody = '{ "content": "syntheticInfo"}';
+        const expectedSyntheticId = 'syntheticId';
+
+        const requestMock = td.function();
+        const httpMock = {};
+        const responseMock = {
+            statusCode: 200
+        };
+
+        td.when(requestMock(
+            td.matchers.isA(Object),
+            td.callback
+        )).thenCallback(null, responseMock, expectedBody);
+
+        const newRelicService = newRelicServiceFactory(expectedApiKey, httpMock, requestMock);
+
+        newRelicService.getSynthetic(expectedSyntheticId, (body, err) => {
+            body.content.should.be.equal('syntheticInfo');
+        });
+    });
 });
