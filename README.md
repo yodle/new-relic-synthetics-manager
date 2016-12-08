@@ -12,7 +12,7 @@ synthetics-manager contains both a command line tool and a library.
 
 The synthmanager command line tool allows the create, update and import synthetics to/from New Relic. 
 
-The synthetics-manager library provides the setup needed to simulate the environment that synthetics are run in New Relic. This is added to your synthetics with "require ('synthetics_manager')" line of code at the top of your local synthetics script. This line should NOT be removed or changed. It is automatically striped out of the synthetic code when it is uploaded to New Relic.
+The synthetics-manager library provides the setup needed to simulate the environment that synthetics are run in New Relic. This is added to your synthetics with "require ('synthetics-manager')" line of code at the top of your local synthetics script. This line should NOT be removed or changed. It is automatically striped out of the synthetic code when it is uploaded to New Relic.
 
 ### Important Note
 
@@ -22,7 +22,7 @@ The synthmanager command line tool makes calls to the New Relic Synthetics API, 
 
 Install the synthmanager command via npm to allow you to use the command line tool:
 ```
-$ npm install synthetics_manager -g
+$ npm install synthetics-manager -g
 ```
 
 Next, create an npm project to store our synthetics:
@@ -32,9 +32,9 @@ $ cd syntheticsProject
 $ npm init
 ```
 
-After creating a project, add synthetics_manager as a dependency:
+After creating a project, add synthetics-manager as a dependency:
 ```
-$ npm install synthetics_manager --save
+$ npm install synthetics-manager --save
 ```
 
 Now, new synthetics can be created with the 'synthmanager create' command:
@@ -112,10 +112,3 @@ Available configuration options are:
 * apikey - Synthetics API key (Note: There may be security issues storing this value in a file).
 * syntheticsDirectory - Directory to store synthetics file in (default: './synthetics/').
 * syntheticsListFile - File to store information about created synthetics in (default: './synthetics.json').
-
-
-
-## TODO
-
-* import synthetics
-* include git information

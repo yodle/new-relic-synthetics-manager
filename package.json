@@ -1,5 +1,5 @@
 {
-  "name": "synthetic_manager",
+  "name": "synthetics-manager",
   "version": "1.0.0",
   "description": "Manage New Relic Synthetics",
   "main": "index.js",
