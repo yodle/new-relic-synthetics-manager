@@ -7,12 +7,19 @@ exports.desc = 'Update existing synthetics monitor';
 exports.builder = {
     name: {
         alias: 'n',
-        desc: 'Name of synthetic to update',
-        demand: 1
+        desc: 'Name of synthetic to update'
+    },
+    filename: {
+        alias: 'f',
+        desc: 'Filename of synthetic to update'
     }
 }
 
 exports.handler = function (argv) {
+    if ((argv.name === undefined) && (argv.filename === undefined)) { 
+        throw new Error('Either name or filename must be specified');
+    }
+
     require('../../lib/config/LoggingConfig')(argv);
 
     const config = require('../../lib/config/SyntheticsConfig').getConfig(argv);
@@ -20,5 +27,9 @@ exports.handler = function (argv) {
     logger.verbose('Update: ' + argv.name);
     logger.verbose(argv);
 
-    dependencies(config).updateMonitorOrchestrator.updateSynthetic(argv.name);
+    if (argv.name) {
+        dependencies(config).updateMonitorOrchestrator.updateSynthetic(argv.name);
+    } else if (argv.filename) {
+        dependencies(config).updateMonitorOrchestrator.updateSynthetic(argv.filename);
+    }
 }

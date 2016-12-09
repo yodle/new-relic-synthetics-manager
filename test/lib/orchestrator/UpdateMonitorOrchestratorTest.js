@@ -71,7 +71,7 @@ describe('UpdateMonitorOrchestrator', function () {
         }).should.throw('synthetic file not found');
     });
 
-    it ('should upload synthetic content to New Relic', function () {
+    it ('should upload synthetic content to New Relic', () => {
         const expectedSyntheticContent = 'synthetic\ncontent';
         const expectedSyntheticId = 'syntheticId';
 
@@ -113,6 +113,56 @@ describe('UpdateMonitorOrchestrator', function () {
         )).thenCallback();
 
         updateMonitorOrchestrator.updateSynthetic(expectedSyntheticName);
+
+        newRelicServiceMock.updateMonitorScript.should.have.been.calledWith(
+            syntheticInfoMock.id,
+            new Buffer(expectedSyntheticContent),
+            td.callback
+        );
+    });
+
+    it ('should be able to update a synthetic by filename', () => {
+        const expectedSyntheticContent = 'synthetic\ncontent';
+        const expectedSyntheticId = 'syntheticId';
+
+        const syntheticListFileServiceMock = {
+            getSyntheticInfoByFilename: td.function()
+        };
+        const syntheticFileServiceMock = {
+            getBase64File: td.function()
+        };
+        const newRelicServiceMock = {
+            updateMonitorScript: td.function()
+        };
+
+        const updateMonitorOrchestrator = updateMonitorOrchestratorFactory(
+            syntheticListFileServiceMock,
+            syntheticFileServiceMock,
+            newRelicServiceMock
+        );
+
+        const syntheticInfoMock = {
+            filename: expectedFilename,
+            id: expectedSyntheticId
+        };
+
+        td.when(syntheticListFileServiceMock.getSyntheticInfoByFilename(
+            td.matchers.isA(String),
+            td.callback
+        )).thenCallback(syntheticInfoMock);
+
+        td.when(syntheticFileServiceMock.getBase64File(
+            td.matchers.isA(String),
+            td.callback
+        )).thenCallback(new Buffer(expectedSyntheticContent), null);
+
+        td.when(newRelicServiceMock.updateMonitorScript(
+            td.matchers.isA(String),
+            td.matchers.isA(String),
+            td.callback
+        )).thenCallback();
+
+        updateMonitorOrchestrator.updateSyntheticByFilename(expectedFilename);
 
         newRelicServiceMock.updateMonitorScript.should.have.been.calledWith(
             syntheticInfoMock.id,
