@@ -27,9 +27,9 @@ exports.handler = function (argv) {
     logger.verbose('Update: ' + argv.name);
     logger.verbose(argv);
 
-    if (argv.name) {
+    if (argv.name !== undefined) {
         dependencies(config).updateMonitorOrchestrator.updateSynthetic(argv.name);
-    } else if (argv.filename) {
+    } else if (argv.filename !== undefined) {
         dependencies(config).updateMonitorOrchestrator.updateSynthetic(argv.filename);
     }
 }
