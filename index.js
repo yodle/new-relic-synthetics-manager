@@ -21,9 +21,9 @@ $browser.waitForAndFindElement = function (locatorOrElement, timeoutMsOpt) {
 };
 
 
-// process.on('exit', function () {
-//     $browser.quit();
-// });
+process.on('exit', function () {
+    $browser.quit();
+});
 
 global.$browser = $browser;
 global.$driver = $driver;
