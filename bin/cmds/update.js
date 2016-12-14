@@ -30,6 +30,6 @@ exports.handler = function (argv) {
     if (argv.name !== undefined) {
         dependencies(config).updateMonitorOrchestrator.updateSynthetic(argv.name);
     } else if (argv.filename !== undefined) {
-        dependencies(config).updateMonitorOrchestrator.updateSynthetic(argv.filename);
+        dependencies(config).updateMonitorOrchestrator.updateSyntheticByFilename(argv.filename);
     }
 }
