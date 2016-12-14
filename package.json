@@ -7,7 +7,7 @@
     "test": "istanbul cover _mocha -- -R spec --recursive",
     "lint": "gulp lint"
   },
-  "author": "David Bradford <dbradf@gmail.com>",
+  "author": "David Bradford <david.bradford@yodle.com>",
   "license": "Apache-2.0",
   "bin": {
     "synthmanager": "bin/synthmanager.js"
