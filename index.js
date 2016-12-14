@@ -22,6 +22,7 @@ $browser.waitForAndFindElement = function (locatorOrElement, timeoutMsOpt) {
 
 
 process.on('exit', function () {
+    console.log('process.exit');
     $browser.quit();
 });
 
