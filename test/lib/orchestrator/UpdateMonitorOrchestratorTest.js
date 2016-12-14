@@ -126,7 +126,7 @@ describe('UpdateMonitorOrchestrator', function () {
         const expectedSyntheticId = 'syntheticId';
 
         const syntheticListFileServiceMock = {
-            getSyntheticInfoByFilename: td.function()
+            getSyntheticByFilename: td.function()
         };
         const syntheticFileServiceMock = {
             getBase64File: td.function()
@@ -146,7 +146,7 @@ describe('UpdateMonitorOrchestrator', function () {
             id: expectedSyntheticId
         };
 
-        td.when(syntheticListFileServiceMock.getSyntheticInfoByFilename(
+        td.when(syntheticListFileServiceMock.getSyntheticByFilename(
             td.matchers.isA(String),
             td.callback
         )).thenCallback(syntheticInfoMock);
