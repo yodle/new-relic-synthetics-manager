@@ -38,6 +38,12 @@ describe('CreateMonitorOrchestrator', function () {
 
         td.when(syntheticsFileServiceMock.exists(expectedFilename, td.callback)).thenCallback(false);
 
+        td.when(syntheticsFileServiceMock.createFile(
+            td.matchers.isA(String),
+            td.matchers.isA(String),
+            td.callback
+        )).thenCallback();
+
         const createMonitorOrchestrator = createMonitorOrchestratorFactory(
             syntheticsFileServiceMock,
             newRelicServiceMock,
@@ -113,7 +119,50 @@ describe('CreateMonitorOrchestrator', function () {
                 td.callback
             );
         });
-        
+    });
+
+    it ('should throw an error if New Relic has a problem', () => {
+        const expectedError = 'new relic error';
+
+        const syntheticsFileServiceMock = {
+            exists: td.function(),
+            createFile: td.function()
+        };
+
+        const newRelicServiceMock = {
+            createSynthetic: td.function()
+        };
+
+        td.when(newRelicServiceMock.createSynthetic(
+            td.matchers.isA(String),
+            td.matchers.isA(Array),
+            td.matchers.isA(Number),
+            td.matchers.isA(String),
+            td.callback
+        )).thenCallback(null, expectedError);
+        td.when(syntheticsFileServiceMock.exists(expectedFilename, td.callback)).thenCallback(true);
+        td.when(syntheticsListFileServiceMock.addSynthetic(
+            'id', monitorName, expectedFilename, td.callback
+        )).thenCallback(null);
+
+
+        const createMonitorOrchestrator = createMonitorOrchestratorFactory(
+            syntheticsFileServiceMock,
+            newRelicServiceMock,
+            syntheticsListFileServiceMock,
+            defaultsMock
+        );
+
+        (() => {
+            createMonitorOrchestrator.createNewMonitor(
+                monitorName,
+                locations,
+                type,
+                frequency,
+                expectedFilename,
+                () => {}
+            );
+        }).should.throw(expectedError);
     });
 
 });
