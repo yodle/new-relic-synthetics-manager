@@ -90,6 +90,7 @@ Create a synthetic in New Relic and a file to contain the synthetic code.
 * --frequency <frequency> - Frequency to run the synthetic in minutes. This should be an integer. Possible values are:  1, 5, 10, 15, 30, 60, 360, 720, or 1440. The default is 10.
 * --locations <location> - Locations to run the synthetic. This can be specified multiple times to specify multiple locations.
 
+
 ### Update New Relic with synthetics code
 
 ```
@@ -100,6 +101,7 @@ Update New Relic with the latest synthetic code for the specified synthetic.
 
 * --name <synthetic_name> - name of synthetic to update. This should be the name used when the synthetic was created.
 
+
 ### Import a synthetic from New Relic
 
 ```
@@ -107,6 +109,7 @@ synthmanager import --name <synthetic_name> --id <synthetic_id> --file <filename
 ```
 
 Import an existing synthetic from New Relic.
+
 
 ## Configuration
 
