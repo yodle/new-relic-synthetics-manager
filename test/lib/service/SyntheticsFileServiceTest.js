@@ -97,13 +97,101 @@ describe('SyntheticsFileService', () => {
         td.when(fileServiceMock.getFileContent(
             expectedPath, 
             td.callback,
-            45
+            td.matchers.isA(Number)
         )).thenCallback(new Buffer(expectedFileContents));
 
         const syntheticsFileService = syntheticsFileServiceFactory(expectedDirectory, fileServiceMock, defaultsMock);
 
         syntheticsFileService.getBase64File(expectedFilename, (fileContents) => {
             fileContents.should.equal(new Buffer(expectedFileContents).toString('base64'));
+        });
+    });
+
+    it ('getBase64File should return an error if it cannot read the file', () => {
+        const expectedError = 'cannot read file';
+        const expectedFileContents = 'file\ncontents\nhere';
+
+        const fileServiceMock = {
+            getFileContent: td.function()
+        };
+
+        td.when(fileServiceMock.getFileContent(
+            expectedPath, 
+            td.callback,
+            td.matchers.isA(Number)
+        )).thenCallback(null, expectedError);
+
+        const syntheticsFileService = syntheticsFileServiceFactory(expectedDirectory, fileServiceMock, defaultsMock);
+
+        syntheticsFileService.getBase64File(expectedFilename, (fileContents, err) => {
+            err.should.equals(expectedError);
+        });
+    });
+
+    it ('should make a directory if it does not exist', () => {
+        const expectedContents = 'Contents\nof\nthe\nfile';
+
+        const fileServiceMock = {
+            writeFile: td.function(),
+            exists: td.function(),
+            mkdir: td.function()
+        };
+
+        td.when(fileServiceMock.writeFile(
+            expectedPath,
+            td.matchers.isA(String),
+            td.callback
+        )).thenCallback(null);
+
+        td.when(fileServiceMock.exists(
+            td.matchers.isA(String),
+            td.callback
+        )).thenCallback(false);
+
+        td.when(fileServiceMock.mkdir(
+            td.matchers.isA(String),
+            td.callback
+        )).thenCallback();
+
+        const syntheticsFileService = syntheticsFileServiceFactory(expectedDirectory, fileServiceMock, defaultsMock);
+        
+        syntheticsFileService.createFile(expectedFilename, expectedContents, () => {
+            td.verify(fileServiceMock.writeFile(
+                expectedPath, expectedContents, td.callback
+            ));
+        });
+    });
+
+    it ('should fail if cannot make a directory', () => {
+        const expectedError = 'error making directory';
+        const expectedContents = 'Contents\nof\nthe\nfile';
+
+        const fileServiceMock = {
+            writeFile: td.function(),
+            exists: td.function(),
+            mkdir: td.function()
+        };
+
+        td.when(fileServiceMock.writeFile(
+            expectedPath,
+            td.matchers.isA(String),
+            td.callback
+        )).thenCallback(null);
+
+        td.when(fileServiceMock.exists(
+            td.matchers.isA(String),
+            td.callback
+        )).thenCallback(false);
+
+        td.when(fileServiceMock.mkdir(
+            td.matchers.isA(String),
+            td.callback
+        )).thenCallback(expectedError);
+
+        const syntheticsFileService = syntheticsFileServiceFactory(expectedDirectory, fileServiceMock, defaultsMock);
+        
+        syntheticsFileService.createFile(expectedFilename, expectedContents, (bytesWritte, err) => {
+            err.should.equal(expectedError);
         });
     });
 });
