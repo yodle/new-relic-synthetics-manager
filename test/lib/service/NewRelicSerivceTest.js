@@ -91,7 +91,7 @@ describe('NewRelicService', function () {
         td.when(requestMock(
             td.matchers.isA(Object),
             td.callback
-        )).thenCallback(responseMock);
+        )).thenCallback(null, responseMock);
 
         const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
 
@@ -190,7 +190,7 @@ describe('NewRelicService', function () {
     });
 
     it ('should throw an error if apikey is undefined', () => {
-        const expectedBody = '{ "content": "syntheticInfo"}';
+        const expectedBody = JSON.stringify({ content: "syntheticInfo"});
         const expectedSyntheticId = 'syntheticId';
 
         const requestMock = td.function();
@@ -207,6 +207,51 @@ describe('NewRelicService', function () {
 
         newRelicService.getSynthetic(expectedSyntheticId, (body, err) => {
             err.toString().should.be.equal('Error: Missing New Relic API key');
+        });
+    });
+
+    it ('should query new relic for monitor scripts', () => {
+        const expectedSyntheticId = 'syntheticId';
+        const expectedContent = 'synthetic\ncode\n';
+
+        const requestMock = td.function();
+        const responseMock = {
+            statusCode: 200
+        };
+        const expectedBody = JSON.stringify({
+            scriptText: expectedContent
+        });
+
+        td.when(requestMock(
+            td.matchers.isA(Object),
+            td.callback
+        )).thenCallback(null, responseMock, expectedBody);
+
+        const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
+
+        newRelicService.getMonitorScript(expectedSyntheticId, (content, err) => {
+            content.should.equal(expectedContent);
+        });
+    });
+
+    it ('should return an error if new relic returns an error for monitor scripts', () => {
+        const expectedError = 'could not retrieve monitor script';
+        const expectedSyntheticId = 'syntheticId';
+
+        const requestMock = td.function();
+        const responseMock = {
+            statusCode: 200
+        };
+
+        td.when(requestMock(
+            td.matchers.isA(Object),
+            td.callback
+        )).thenCallback(expectedError);
+
+        const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
+
+        newRelicService.getMonitorScript(expectedSyntheticId, (content, err) => {
+            err.should.equal(expectedError);
         });
     });
 });
