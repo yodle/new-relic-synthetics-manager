@@ -6,7 +6,7 @@ const should = chai.should();
 
 const syntheticsFileServiceFactory = require('../../../lib/service/SyntheticsFileService');
 
-describe('SyntheticsFileService', function () {
+describe('SyntheticsFileService', () => {
     const initialSyntheticsCode = '//initial synthetics\ncode';
 
     const expectedDirectory = 'syntheticsDirectory';
@@ -17,7 +17,7 @@ describe('SyntheticsFileService', function () {
         syntheticsContent: initialSyntheticsCode
     };
 
-    it ('should write a file when createFile is called', function () {
+    it ('should write a file when createFile is called', () => {
         const expectedContents = 'Contents\nof\nthe\nfile';
 
         const fileServiceMock = {
@@ -38,14 +38,14 @@ describe('SyntheticsFileService', function () {
 
         const syntheticsFileService = syntheticsFileServiceFactory(expectedDirectory, fileServiceMock, defaultsMock);
         
-        syntheticsFileService.createFile(expectedFilename, expectedContents, function () {
+        syntheticsFileService.createFile(expectedFilename, expectedContents, () => {
             td.verify(fileServiceMock.writeFile(
                 expectedPath, expectedContents, td.callback
             ));
         });
     });
 
-    it ('should call to file service to determine if a file exists', function () {
+    it ('should call to file service to determine if a file exists', () => {
         const fileServiceMock = {
             exists: td.function()
         };
@@ -57,12 +57,12 @@ describe('SyntheticsFileService', function () {
 
         const syntheticsFileService = syntheticsFileServiceFactory(expectedDirectory, fileServiceMock, defaultsMock);
 
-        syntheticsFileService.exists(expectedFilename, function (exists) {
+        syntheticsFileService.exists(expectedFilename, (exists) => {
             exists.should.equal(true);
         });
     });
 
-    it ('should get file contents offset by size of file contents', function () {
+    it ('should get file contents offset by size of file contents', () => {
         const expectedFileContents = 'file\ncontents\nhere';
 
         const fileServiceMock = {
@@ -77,7 +77,7 @@ describe('SyntheticsFileService', function () {
 
         const syntheticsFileService = syntheticsFileServiceFactory(expectedDirectory, fileServiceMock, defaultsMock);
 
-        syntheticsFileService.getFileContent(expectedFilename, function (fileContents) {
+        syntheticsFileService.getFileContent(expectedFilename, (fileContents) => {
             fileContents.should.equal(expectedFileContents);
             fileServiceMock.getFileContent.should.have.been.calledWith(
                 expectedPath,
@@ -87,7 +87,7 @@ describe('SyntheticsFileService', function () {
         });
     });
 
-    it ('getBase64File should get file contents converted to base64', function () {
+    it ('getBase64File should get file contents converted to base64', () => {
         const expectedFileContents = 'file\ncontents\nhere';
 
         const fileServiceMock = {
@@ -102,7 +102,7 @@ describe('SyntheticsFileService', function () {
 
         const syntheticsFileService = syntheticsFileServiceFactory(expectedDirectory, fileServiceMock, defaultsMock);
 
-        syntheticsFileService.getBase64File(expectedFilename, function (fileContents) {
+        syntheticsFileService.getBase64File(expectedFilename, (fileContents) => {
             fileContents.should.equal(new Buffer(expectedFileContents).toString('base64'));
         });
     });

@@ -109,7 +109,7 @@ describe('CreateMonitorOrchestrator', function () {
                 monitorName,
                 locations,
                 frequency,
-                'DISABLED',
+                'ENABLED',
                 td.callback
             );
         });
