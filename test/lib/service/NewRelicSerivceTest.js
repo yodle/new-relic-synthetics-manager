@@ -7,7 +7,7 @@ chai.use(tdChai(td));
 
 const newRelicServiceFactory = require('../../../lib/service/NewRelicService');
 
-describe('NewRelicService', function () {
+describe('NewRelicService', () => {
     const expectedApiKey = 'apikey';
     const expectedName = 'syntheticName';
     const expectedLocations = ['location1'];
@@ -20,7 +20,7 @@ describe('NewRelicService', function () {
         end: td.function()
     };
 
-    it ('should POST to NR when creating a synthetic', function () {
+    it ('should POST to NR when creating a synthetic', () => {
         const responseMock = {
             statusCode: 201,
             headers: {
@@ -42,13 +42,13 @@ describe('NewRelicService', function () {
             expectedLocations,
             expectedFrequency,
             expectedStatus,
-            function (syntheticUrl) {
+            (syntheticUrl) => {
                 syntheticUrl.should.equals(expectedUrl);
             }
         );
     });
 
-    it ('report errors from New Relic when creating a synthetic', function () {
+    it ('report errors from New Relic when creating a synthetic', () => {
         const expectedStatusMessage = 'error message';
         const responseMock = {
             statusCode: 404,
@@ -78,7 +78,7 @@ describe('NewRelicService', function () {
         );
     });
 
-    it ('should PUT to NR when updating a synthetic', function () {
+    it ('should PUT to NR when updating a synthetic', () => {
         const expectedId = 'syntheticId';
         const expectedContent = 'new relic synthetic content';
 
@@ -102,7 +102,7 @@ describe('NewRelicService', function () {
         );
     });
 
-    it ('report errors from New Relic when updating a synthetic', function () {
+    it ('report errors from New Relic when updating a synthetic', () => {
         const expectedId = 'syntheticId';
         const expectedContent = 'new relic synthetic content';
         const expectedStatusCode = 500;
@@ -174,7 +174,7 @@ describe('NewRelicService', function () {
 
         const requestMock = td.function();
         const responseMock = {
-            statusCode: 201
+            statusCode: 200
         };
 
         td.when(requestMock(
