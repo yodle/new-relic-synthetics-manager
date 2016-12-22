@@ -5,6 +5,8 @@ This project has two goals:
 * Be able to run your New Relic Synthethics locally. This lets you do things like debugging.
 * Manage your New Relic Synthetics from the command line. Create new synthetics or update existing ones. This allows you to store the synthetics code under source code control.
 
+[![Build Status](https://travis-ci.org/yodle/new-relic-synthetics-manager.svg?branch=master)](https://travis-ci.org/yodle/new-relic-synthetics-manager)
+
 ## Description
 
 This tool is designed to allow creating, writing and managing New Relic scripted browser synthetics. This allows synthetics to be run and debug on a local machine and then push them to New Relic when ready. This also allows synthetics to be stored in a SCM system to track changes and have a CI system push them to New Relic in an automation fashion.
