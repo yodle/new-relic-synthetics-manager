@@ -1,4 +1,4 @@
-# synthetics-manager
+# New Relic Synthetics Manager
 
 This project has two goals:
 
@@ -21,9 +21,11 @@ The synthmanager command line tool makes calls to the New Relic Synthetics API, 
 
 ## Getting Started
 
+synthmanager was written for node.js v6 or greater. You will need to have that installed to proceed. Installation instructions can be found here: https://nodejs.org/
+
 Install the synthmanager command via npm to allow you to use the command line tool:
 ```
-$ npm install synthetics-manager -g
+$ npm install new-relic-synthetics-manager -g
 ```
 
 Next, create an npm project to store our synthetics:
@@ -35,7 +37,7 @@ $ npm init
 
 After creating a project, add synthetics-manager as a dependency:
 ```
-$ npm install synthetics-manager --save
+$ npm install new-relic-synthetics-manager --save
 ```
 
 Now, new synthetics can be created with the 'synthmanager create' command:
