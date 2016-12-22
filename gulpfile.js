@@ -20,6 +20,8 @@ gulp.task('pre-test', () => {
 gulp.task('test', ['pre-test'], () => {
   return gulp.src('./test/**/*.js')
     .pipe(mocha({reporter: 'spec' }))
+    // Ugly hack because the mocha plugin doesn't properly exit with an exit code on test failures
+    .on('error', (err) => { process.exit(1) })
     .pipe(istanbul.writeReports())
     .pipe(istanbul.enforceThresholds({ thresholds: { global: 90 } }));
 });
