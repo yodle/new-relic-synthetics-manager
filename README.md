@@ -124,3 +124,7 @@ Available configuration options are:
 * apikey - Synthetics API key (Note: There may be security issues storing this value in a file).
 * syntheticsDirectory - Directory to store synthetics file in (default: './synthetics/').
 * syntheticsListFile - File to store information about created synthetics in (default: './synthetics.json').
+
+## Samples
+
+See the samples directory for an example of what Synthetics look like and a sample of how synthetics might be added to a continuous delivery system.
