@@ -1,9 +1,11 @@
 # New Relic Synthetics Manager
 
-This project has two goals:
+This project has two goals to improve working with [New Relic Synthetics](https://newrelic.com/synthetics):
 
 * Be able to run your New Relic Synthethics locally. This lets you do things like debugging.
 * Manage your New Relic Synthetics from the command line. Create new synthetics or update existing ones. This allows you to store the synthetics code under source code control.
+
+For more information on New Relic Synthetics see [New Relic's Documentation](https://docs.newrelic.com/docs/synthetics/new-relic-synthetics/scripting-monitors/write-scripted-browsers)
 
 [![Build Status](https://travis-ci.org/yodle/new-relic-synthetics-manager.svg?branch=master)](https://travis-ci.org/yodle/new-relic-synthetics-manager)
 
@@ -11,11 +13,11 @@ This project has two goals:
 
 This tool is designed to allow creating, writing and managing New Relic scripted browser synthetics. This allows synthetics to be run and debug on a local machine and then push them to New Relic when ready. This also allows synthetics to be stored in a SCM system to track changes and have a CI system push them to New Relic in an automation fashion.
 
-synthetics-manager contains both a command line tool and a library. 
+new-relic-synthetics-manager contains both a command line tool and a library. 
 
 The synthmanager command line tool allows the create, update and import synthetics to/from New Relic. 
 
-The synthetics-manager library provides the setup needed to simulate the environment that synthetics are run in New Relic. This is added to your synthetics with "require ('synthetics-manager')" line of code at the top of your local synthetics script. This line should NOT be removed or changed. It is automatically striped out of the synthetic code when it is uploaded to New Relic.
+The new-relic-synthetics-manager library provides the setup needed to simulate the environment that synthetics are run in New Relic. This is added to your synthetics with "require ('new-relic-synthetics-manager')" line of code at the top of your local synthetics script. This line should NOT be removed or changed. It is automatically striped out of the synthetic code when it is uploaded to New Relic.
 
 ### Important Note
 
@@ -26,23 +28,27 @@ The synthmanager command line tool makes calls to the New Relic Synthetics API, 
 synthmanager was written for node.js v6 or greater. You will need to have that installed to proceed. Installation instructions can be found here: https://nodejs.org/
 
 Install the synthmanager command via npm to allow you to use the command line tool:
+
 ```
 $ npm install new-relic-synthetics-manager -g
 ```
 
 Next, create an npm project to store our synthetics:
+
 ```
 $ mkdir syntheticsProject
 $ cd syntheticsProject
 $ npm init
 ```
 
-After creating a project, add synthetics-manager as a dependency:
+After creating a project, add new-relic-synthetics-manager as a dependency:
+
 ```
 $ npm install new-relic-synthetics-manager --save
 ```
 
 Now, new synthetics can be created with the 'synthmanager create' command:
+
 ```
 $ synthmanager create --name "New Synthetic Name" --filename newSyntheticName.js
 ```
@@ -50,6 +56,7 @@ $ synthmanager create --name "New Synthetic Name" --filename newSyntheticName.js
 This will create the synthetic in New Relic and create a js file with the specified name under the synthetics directory. The js file has some basic setup needed to run the synthetic locally.
 
 After, when the synthetics code has been completed, it can be uploaded to New Relic with the 'synthmanager update' command: 
+
 ```
 $ synthmanager update --name "New Synthetic Name"
 ```
@@ -67,6 +74,7 @@ New Relic runs synthetics using the chrome web browser. So that is the recommend
 ### Running Synthetics
 
 Once the prerequisites are installed and a synthetic is created, it can be run locally. This can be done with an IDE or using node:
+
 ```
 $ node synthetics/newSyntheticName.js
 ```
@@ -107,6 +115,8 @@ Update New Relic with the latest synthetic code for the specified synthetic.
 
 
 ### Import a synthetic from New Relic
+
+In order to import a New Relic Synthetic, the synthetic id is needed. This can be obtained from the New Relic Synthetics website. Navigate to the Synthetic to import and the id will be the last part of the URL (It is made up of 5 hexidecimal numbers separated by dashes).
 
 ```
 synthmanager import --name <synthetic_name> --id <synthetic_id> --file <filename>
