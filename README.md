@@ -61,33 +61,7 @@ After, when the synthetics code has been completed, it can be uploaded to New Re
 $ synthmanager update --name "New Synthetic Name"
 ```
 
-## Running Synthetics locally
-
-### Prerequisites
-
-New Relic runs synthetics using the chrome web browser. So that is the recommended way to run them locally. In order to run them, the following need to be setup:
-
-* Chrome Web browser
-* Selenium Server (http://www.seleniumhq.org/download/), should be running
-* Chrome Driver (https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver), should be in the path
-
-### Running Synthetics
-
-Once the prerequisites are installed and a synthetic is created, it can be run locally. This can be done with an IDE or using node:
-
-```
-$ node synthetics/newSyntheticName.js
-```
-
 ## Command Line Usage
-
-### Global options
-
-These options can be used with any command:
-
-* --apikey - Specify API key to use to access New Relic.
-* --verbose - Provide verbose logging output.
-* --debug - Provide debug logging output.
 
 ### Create a new synthetic
 
@@ -95,7 +69,7 @@ These options can be used with any command:
 synthmanager create --name <synthetic_name> --file <filename>
 ```
 
-Create a synthetic in New Relic and a file to contain the synthetic code.
+Create a synthetic in New Relic and a file to contain the synthetic code. The local file will be created in the directory the command was run. This is where you will put your test code.
 
 * --name <synthetic_name> - Name of synthetic. This is the name used in New Relic as well as how it should be refered to by other commands
 * --file <filename> - Filename where the synthethics code should go. This file will be created under the 'synthetics' directory. The file should not already exist.
@@ -124,6 +98,13 @@ synthmanager import --name <synthetic_name> --id <synthetic_id> --file <filename
 
 Import an existing synthetic from New Relic.
 
+### Global options
+
+These options can be used with any command:
+
+* --apikey - Specify API key to use to access New Relic.
+* --verbose - Provide verbose logging output.
+* --debug - Provide debug logging output.
 
 ## Configuration
 
@@ -134,6 +115,24 @@ Available configuration options are:
 * apikey - Synthetics API key (Note: There may be security issues storing this value in a file).
 * syntheticsDirectory - Directory to store synthetics file in (default: './synthetics/').
 * syntheticsListFile - File to store information about created synthetics in (default: './synthetics.json').
+
+## Running Synthetics locally
+
+### Prerequisites
+
+New Relic runs synthetics using the chrome web browser. So that is the recommended way to run them locally. In order to run them, the following need to be setup:
+
+* Chrome Web browser
+* Selenium Server (http://www.seleniumhq.org/download/), should be running
+* Chrome Driver (https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver), should be in the path
+
+### Running Synthetics
+
+Once the prerequisites are installed and a synthetic is created, it can be run locally. This can be done with an IDE or using node:
+
+```
+$ node synthetics/newSyntheticName.js
+```
 
 ## Samples
 
