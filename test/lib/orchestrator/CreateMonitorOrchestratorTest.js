@@ -95,7 +95,9 @@ describe('CreateMonitorOrchestrator', function () {
             td.matchers.isA(Array),
             td.matchers.isA(Number),
             td.matchers.isA(String),
-            td.callback
+            td.matchers.isA(String),
+            td.callback,
+            undefined
         )).thenCallback('http://newrelic/id');
         td.when(syntheticsFileServiceMock.exists(expectedFilename, td.callback)).thenCallback(true);
         td.when(syntheticsListFileServiceMock.addSynthetic(
@@ -116,7 +118,9 @@ describe('CreateMonitorOrchestrator', function () {
                 locations,
                 frequency,
                 'ENABLED',
-                td.callback
+                type,
+                td.callback,
+                undefined
             );
         });
     });
@@ -138,7 +142,9 @@ describe('CreateMonitorOrchestrator', function () {
             td.matchers.isA(Array),
             td.matchers.isA(Number),
             td.matchers.isA(String),
-            td.callback
+            td.matchers.isA(String),
+            td.callback,
+            undefined
         )).thenCallback(null, expectedError);
         td.when(syntheticsFileServiceMock.exists(expectedFilename, td.callback)).thenCallback(true);
         td.when(syntheticsListFileServiceMock.addSynthetic(
@@ -165,4 +171,22 @@ describe('CreateMonitorOrchestrator', function () {
         }).should.throw(expectedError);
     });
 
+    it ('should not create a synthetics file for SIMPLE synthetics', () => {
+        const type = 'SIMPLE';
+        const syntheticsFileServiceMock = {
+            exists: td.function(),
+            createFile: td.function()
+        };
+
+        const createMonitorOrchestrator = createMonitorOrchestratorFactory(
+            syntheticsFileServiceMock,
+            newRelicServiceMock,
+            syntheticsListFileServiceMock,
+            defaultsMock
+        );
+
+        createMonitorOrchestrator.createNewMonitor(monitorName, locations, type, frequency, expectedFilename);
+
+        syntheticsFileServiceMock.exists.should.not.have.been.called;
+    });
 });
