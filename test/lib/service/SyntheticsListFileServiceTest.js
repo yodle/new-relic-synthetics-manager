@@ -251,4 +251,110 @@ describe('SyntheticsListFileService', function () {
             err.should.equal('Could not find info for synthetic filename: ' + unknownSyntheticFilename);
         });
     });
+
+    it ('should not require a filename for some synthetics', () => {
+        const fileServiceMock = {
+            exists: function (filename, callback) {
+                filename.should.equal(expectedSyntheticsListFile);
+                callback(true);
+            },
+            writeFile: td.function(),
+            getFileContent: function (filename, callback) {
+                filename.should.equal(expectedSyntheticsListFile);
+                callback('{}');
+            }
+        };
+
+        td.when(fileServiceMock.writeFile(
+            expectedSyntheticsListFile,
+                td.matchers.contains(expectedSyntheticId),
+                td.callback
+        )).thenCallback(null);
+
+        const syntheticsListFileService = syntheticsListFileServiceFactory(expectedSyntheticsListFile, fileServiceMock);
+
+        syntheticsListFileService.addSynthetic(expectedSyntheticId, expectedSynthetic, null, () => {
+            td.verify(fileServiceMock.writeFile(
+                expectedSyntheticsListFile,
+                td.matchers.contains(expectedSyntheticId),
+                td.callback
+            ));
+        });
+    });
+
+    it ('should fail if unable to create Synthetics List File', function () {
+        const expectedError = 'error writing file';
+
+        const fileServiceMock = {
+            exists: function (filename, callback) {
+                filename.should.equals(expectedSyntheticsListFile);
+                callback(false);
+            },
+            writeFile: td.function(),
+            getFileContent: td.function()
+        }
+
+        td.when(fileServiceMock.writeFile(
+            td.matchers.isA(String),
+            td.matchers.isA(String),
+            td.callback
+        )).thenCallback(null, expectedError);
+
+        td.when(fileServiceMock.getFileContent(
+            td.matchers.isA(String),
+            td.callback
+        )).thenCallback('{}');
+
+        const syntheticsListFileService = syntheticsListFileServiceFactory(expectedSyntheticsListFile, fileServiceMock);
+
+        syntheticsListFileService.addSynthetic(expectedSyntheticId, expectedSynthetic, expectedSyntheticFilename, (err) => {
+            err.should.equals(expectedError);
+        });
+    });
+
+    it ('should fail getSynthetic if synthetics file cannot be read', () => {
+        const expectedError = 'error reading file';
+        const fileServiceMock = {
+            exists: function (filename, callback) {
+                filename.should.equal(expectedSyntheticsListFile);
+                callback(true);
+            },
+            writeFile: td.function(),
+            getFileContent: td.function()
+        };
+
+        td.when(fileServiceMock.getFileContent(
+            td.matchers.isA(String),
+            td.callback
+        )).thenCallback(null, expectedError);
+
+        const syntheticsListFileService = syntheticsListFileServiceFactory(expectedSyntheticsListFile, fileServiceMock);
+
+        syntheticsListFileService.getSynthetic(expectedSynthetic, (syntheticInfo, err) => {
+            err.should.equals(expectedError);
+        });
+    });
+
+    it ('should fail addSynthetic if synthetics file cannot be read', () => {
+        const expectedError = 'error reading file';
+        const fileServiceMock = {
+            exists: function (filename, callback) {
+                filename.should.equal(expectedSyntheticsListFile);
+                callback(true);
+            },
+            writeFile: td.function(),
+            getFileContent: td.function()
+        };
+
+        td.when(fileServiceMock.getFileContent(
+            td.matchers.isA(String),
+            td.callback
+        )).thenCallback(null, expectedError);
+
+        const syntheticsListFileService = syntheticsListFileServiceFactory(expectedSyntheticsListFile, fileServiceMock);
+
+        syntheticsListFileService.addSynthetic(expectedSyntheticId, expectedSynthetic, expectedSyntheticFilename, (err) => {
+            err.should.equals(expectedError);
+        });
+    });
 });

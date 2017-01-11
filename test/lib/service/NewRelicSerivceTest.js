@@ -14,6 +14,7 @@ describe('NewRelicService', () => {
     const expectedFrequency = 10;
     const expectedStatus = 'DISABLED';
     const expectedUrl = 'http://newrelic/id';
+    const expectedType = 'SCRIPTED_BROWSER';
 
     const requestMock = {
         write: td.function(),
@@ -42,6 +43,7 @@ describe('NewRelicService', () => {
             expectedLocations,
             expectedFrequency,
             expectedStatus,
+            expectedType,
             (syntheticUrl) => {
                 syntheticUrl.should.equals(expectedUrl);
             }
@@ -72,6 +74,7 @@ describe('NewRelicService', () => {
             expectedLocations,
             expectedFrequency,
             expectedStatus,
+            expectedType,
             (syntheticUrl, err) => {
                 err.should.equal(expectedStatusMessage);
             }
@@ -253,5 +256,72 @@ describe('NewRelicService', () => {
         newRelicService.getMonitorScript(expectedSyntheticId, (content, err) => {
             err.should.equal(expectedError);
         });
+    });
+
+    it ('should fail to create a SIMPLE synthetic without a uri', () => {
+        const type = 'SIMPLE';
+        const requestMock = td.function();
+        const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
+
+        newRelicService.createSynthetic(
+            expectedName,
+            expectedLocations,
+            expectedFrequency,
+            expectedStatus,
+            type,
+            (syntheticUrl, err) => {
+                err.should.equals('Error: Missing uri parameter');
+            }
+        );
+    });
+
+    it ('should fail to create a BROWSER synthetic without a uri', () => {
+        const type = 'BROWSER';
+        const requestMock = td.function();
+        const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
+
+        newRelicService.createSynthetic(
+            expectedName,
+            expectedLocations,
+            expectedFrequency,
+            expectedStatus,
+            type,
+            (syntheticUrl, err) => {
+                err.should.equals('Error: Missing uri parameter');
+            }
+        );
+    });
+
+    it ('should POST to NR when creating a SIMPLE synthetic', () => {
+        const type = 'SIMPLE';
+        const uri = 'http://simple.uri.com/';
+
+        const responseMock = {
+            statusCode: 201,
+            headers: {
+                location: expectedUrl
+            }
+        };
+
+        const requestMock = td.function();
+
+        td.when(requestMock(
+            td.matchers.isA(Object),
+            td.callback
+        )).thenCallback(null, responseMock);
+
+        const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
+
+        newRelicService.createSynthetic(
+            expectedName,
+            expectedLocations,
+            expectedFrequency,
+            expectedStatus,
+            type,
+            (syntheticUrl) => {
+                syntheticUrl.should.equals(expectedUrl);
+            },
+            uri
+        );
     });
 });
