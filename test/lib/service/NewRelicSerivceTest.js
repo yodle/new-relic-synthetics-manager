@@ -109,16 +109,21 @@ describe('NewRelicService', () => {
         const expectedId = 'syntheticId';
         const expectedContent = 'new relic synthetic content';
         const expectedStatusCode = 500;
+        const errorMessage = 'error updating synthetic';
+        const errorHtml = '<p>' + errorMessage + '</p>';
 
         const requestMock = td.function();
         const responseMock = {
-            statusCode: expectedStatusCode
+            statusCode: expectedStatusCode,
+            headers: {
+                'content-type': 'other'
+            }
         };
 
         td.when(requestMock(
             td.matchers.isA(Object),
             td.callback
-        )).thenCallback(null, responseMock);
+        )).thenCallback(null, responseMock, errorHtml);
 
         const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
 
@@ -126,7 +131,7 @@ describe('NewRelicService', () => {
             expectedId,
             expectedContent,
             (err) => {
-                err.should.equal('Error updating code for synthetic: ' + expectedStatusCode);
+                err.should.equal('Error updating code for synthetic: ' + expectedStatusCode + '; Unknown Error');
             }
         );
     });
@@ -153,21 +158,26 @@ describe('NewRelicService', () => {
         const expectedStatusCode = 404;
         const expectedSyntheticId = 'syntheticId';
         const expectedError = 'Error retrieving synthetic: '  + expectedStatusCode;
+        const errorMessage = 'Cannot find synthetic';
+        const errorHtml = '<p>' + errorMessage + '</p>';
 
         const requestMock = td.function();
         const responseMock = {
-            statusCode: expectedStatusCode
+            statusCode: expectedStatusCode,
+            headers: {
+                'content-type': 'text/html'
+            }
         };
 
         td.when(requestMock(
             td.matchers.isA(Object),
             td.callback
-        )).thenCallback(null, responseMock);
+        )).thenCallback(null, responseMock, errorHtml);
 
         const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
 
         newRelicService.getSynthetic(expectedSyntheticId, (body, err) => {
-            err.should.be.equal(expectedError);
+            err.should.be.equal(expectedError + '; New Relic Response : ' + errorMessage);
         });
     });
 
@@ -348,22 +358,29 @@ describe('NewRelicService', () => {
     });
 
     it ('should fail if NR throws an error when getting locations', () => {
+        const errorMessage = 'error getting locations';
+
         const responseMock = {
-            statusCode: 500
+            statusCode: 500,
+            headers: {
+                'content-type': 'application/json'
+            }
         };
+
+        const expectedBody = JSON.stringify({errors: [{error: errorMessage}]});
 
         const requestMock = td.function();
 
         td.when(requestMock(
             td.matchers.isA(Object),
             td.callback
-        )).thenCallback(null, responseMock);
+        )).thenCallback(null, responseMock, expectedBody);
 
         const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
 
         newRelicService.getAvailableLocations(
             (err, locationsList) => {
-                err.should.be.equal('Error getting location values synthetic: 500');
+                err.should.be.equal('Error getting location values synthetic: 500; New Relic Response : ' + errorMessage);
             }
         );
     });
