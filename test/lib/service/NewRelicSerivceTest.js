@@ -324,4 +324,47 @@ describe('NewRelicService', () => {
             uri
         );
     });
+
+    it ('should GET to NR when listing locations', () => {
+        const expectedLocationsList = JSON.stringify({ locations: "list of locations" });
+        const responseMock = {
+            statusCode: 200
+        };
+
+        const requestMock = td.function();
+
+        td.when(requestMock(
+            td.matchers.isA(Object),
+            td.callback
+        )).thenCallback(null, responseMock, expectedLocationsList);
+
+        const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
+
+        newRelicService.getAvailableLocations(
+            (err, locationsList) => {
+                JSON.stringify(locationsList).should.be.equal(expectedLocationsList);
+            }
+        );
+    });
+
+    it ('should fail if NR throws an error when getting locations', () => {
+        const responseMock = {
+            statusCode: 500
+        };
+
+        const requestMock = td.function();
+
+        td.when(requestMock(
+            td.matchers.isA(Object),
+            td.callback
+        )).thenCallback(null, responseMock);
+
+        const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
+
+        newRelicService.getAvailableLocations(
+            (err, locationsList) => {
+                err.should.be.equal('Error getting location values synthetic: 500');
+            }
+        );
+    });
 });
