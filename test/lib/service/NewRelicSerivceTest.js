@@ -384,4 +384,74 @@ describe('NewRelicService', () => {
             }
         );
     });
+
+    it ('should PATCH to NR when changing configuration', () => {
+        const expectedId = 'syntheticId';
+        const frequency = 5;
+        const locations = ['location1', 'location2'];
+        const uri = 'http://theuri.com';
+        const status = 'ENABLED';
+        const newName = 'syntheticName';
+        const responseMock = {
+            statusCode: 204
+        };
+
+        const requestMock = td.function();
+
+        td.when(requestMock(
+            td.matchers.isA(Object),
+            td.callback
+        )).thenCallback(null, responseMock, null);
+
+        const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
+
+        newRelicService.updateMonitorSettings(
+            expectedId,
+            frequency,
+            locations,
+            uri,
+            status,
+            newName,
+            (err) => {
+                requestMock.should.have.been.calledWith(
+                    td.matchers.isA(Object),
+                    td.callback
+                );
+            }
+        );
+    });
+
+    it ('should return error when NR errors on synthetic config change', () => {
+        const expectedId = 'syntheticId';
+        const frequency = 5;
+        const locations = null;
+        const uri = 'http://theuri.com';
+        const status = null;
+        const newName = 'syntheticName';
+        const expectedError = 'error changing synthetic config';
+        const responseMock = {
+            statusCode: 500
+        };
+
+        const requestMock = td.function();
+
+        td.when(requestMock(
+            td.matchers.isA(Object),
+            td.callback
+        )).thenCallback(expectedError, responseMock, null);
+
+        const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
+
+        newRelicService.updateMonitorSettings(
+            expectedId,
+            frequency,
+            locations,
+            uri,
+            status,
+            newName,
+            (err) => {
+                err.should.be.equal(expectedError);
+            }
+        );
+    });
 });
