@@ -454,4 +454,96 @@ describe('NewRelicService', () => {
             }
         );
     });
+
+    it ('should POST to NR when adding alert emails', () => {
+        const expectedId = 'syntheticId';
+        const expectedEmails = ['email1@email.com', 'email2@email.com'];
+        const responseMock = {
+            statusCode: 204
+        };
+
+        const requestMock = td.function();
+
+        td.when(requestMock(
+            td.matchers.isA(Object),
+            td.callback
+        )).thenCallback(null, responseMock, null);
+
+        const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
+
+        newRelicService.addAlertEmails(expectedId, expectedEmails, (err) => {
+            requestMock.should.have.been.calledWith(
+                td.matchers.isA(Object),
+                td.callback
+            );
+        });
+    });
+
+    it ('should return error when NR errors on adding emails', () => {
+        const expectedId = 'syntheticId';
+        const expectedEmails = ['email1@email.com', 'email2@email.com'];
+        const expectedError = 'error changing synthetic config';
+        const responseMock = {
+            statusCode: 500
+        };
+
+        const requestMock = td.function();
+
+        td.when(requestMock(
+            td.matchers.isA(Object),
+            td.callback
+        )).thenCallback(expectedError, responseMock, null);
+
+        const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
+
+        newRelicService.addAlertEmails(expectedId, expectedEmails, (err) => {
+            err.should.be.equal(expectedError);
+        });
+    });
+
+    it ('should POST to NR when removing alert emails', () => {
+        const expectedId = 'syntheticId';
+        const expectedEmail = 'email1@email.com';
+        const responseMock = {
+            statusCode: 204
+        };
+
+        const requestMock = td.function();
+
+        td.when(requestMock(
+            td.matchers.isA(Object),
+            td.callback
+        )).thenCallback(null, responseMock, null);
+
+        const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
+
+        newRelicService.removeAlertEmail(expectedId, expectedEmail, (err) => {
+            requestMock.should.have.been.calledWith(
+                td.matchers.isA(Object),
+                td.callback
+            );
+        });
+    });
+
+    it ('should return error when NR errors on removing emails', () => {
+        const expectedId = 'syntheticId';
+        const expectedEmail = 'email1@email.com';
+        const expectedError = 'error changing synthetic config';
+        const responseMock = {
+            statusCode: 500
+        };
+
+        const requestMock = td.function();
+
+        td.when(requestMock(
+            td.matchers.isA(Object),
+            td.callback
+        )).thenCallback(expectedError, responseMock, null);
+
+        const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
+
+        newRelicService.removeAlertEmail(expectedId, expectedEmail, (err) => {
+            err.should.be.equal(expectedError);
+        });
+    });
 });

@@ -36,7 +36,7 @@ describe('ChangeConfigOrchestrator', () => {
         const changeConfigOrchestrator = changeConfigOrchestratorFactory(newRelicServiceMock, syntheticsListFileService);
 
         changeConfigOrchestrator.changeConfigurationById(
-            expectedId, expectedFrequency, expectedLocations, expectedUri, expectedStatus, expectedNewName, (err) => {
+            expectedId, expectedFrequency, expectedLocations, expectedUri, expectedStatus, expectedNewName, null, null, (err) => {
                 newRelicServiceMock.updateMonitorSettings.should.have.been.calledWith(
                     expectedId,
                     expectedFrequency,
@@ -100,7 +100,7 @@ describe('ChangeConfigOrchestrator', () => {
         const changeConfigOrchestrator = changeConfigOrchestratorFactory(newRelicServiceMock, syntheticsListFileService);
 
         changeConfigOrchestrator.changeConfigurationById(
-            expectedId, expectedFrequency, expectedLocations, expectedUri, expectedStatus, expectedNewName, (err) => {
+            expectedId, expectedFrequency, expectedLocations, expectedUri, expectedStatus, expectedNewName, null, null, (err) => {
                 err.should.be.equal(expectedError);
             }
         );
@@ -188,5 +188,61 @@ describe('ChangeConfigOrchestrator', () => {
                 expectedName, expectedFrequency, expectedLocations, expectedUri, expectedStatus, expectedNewName
             );
         }).should.throw(expectedError);
+    });
+
+    it ('call to NR to add alert emails by id', () => {
+        const expectedEmails = ['email1@email.com', 'email2@email.com'];
+
+        const newRelicServiceMock = {
+            addAlertEmails: td.function()
+        }
+
+        td.when(newRelicServiceMock.addAlertEmails(
+            td.matchers.isA(String),
+            td.matchers.isA(Array),
+            td.callback
+        )).thenCallback();
+
+        const syntheticsListFileService = {};
+
+        const changeConfigOrchestrator = changeConfigOrchestratorFactory(newRelicServiceMock, syntheticsListFileService);
+
+        changeConfigOrchestrator.changeConfigurationById(
+            expectedId, null, null, null, null, null, expectedEmails, null, (err) => {
+                newRelicServiceMock.addAlertEmails.should.have.been.calledWith(
+                    expectedId,
+                    expectedEmails,
+                    td.callback
+                );
+            }
+        );
+    });
+
+    it ('call to NR to remove alert email by id', () => {
+        const expectedEmail = 'email1@email.com';
+
+        const newRelicServiceMock = {
+            removeAlertEmail: td.function()
+        }
+
+        td.when(newRelicServiceMock.removeAlertEmail(
+            td.matchers.isA(String),
+            td.matchers.isA(String),
+            td.callback
+        )).thenCallback();
+
+        const syntheticsListFileService = {};
+
+        const changeConfigOrchestrator = changeConfigOrchestratorFactory(newRelicServiceMock, syntheticsListFileService);
+
+        changeConfigOrchestrator.changeConfigurationById(
+            expectedId, null, null, null, null, null, null, expectedEmail, (err) => {
+                newRelicServiceMock.removeAlertEmail.should.have.been.calledWith(
+                    expectedId,
+                    expectedEmail,
+                    td.callback
+                );
+            }
+        );
     });
 });

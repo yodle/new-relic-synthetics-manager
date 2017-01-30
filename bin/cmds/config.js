@@ -37,7 +37,15 @@ exports.builder = {
     rename: {
         desc: 'New name to use for synthetic',
         type: 'string',
-    }
+    },
+    addemail: {
+        desc: 'Add emails to alerting for synthetics (parameter can be specified multiple times)',
+        type: 'array',
+    },
+    rmemail: {
+        desc: 'Remove email from alerting for synthetics',
+        type: 'string',
+    },
 }
 
 function validate(argv) {
@@ -45,7 +53,7 @@ function validate(argv) {
         throw new Error('ERROR: Either name or id must be specified');
     }
 
-    const allOptions = [argv.frequency, argv.locations, argv.uri, argv.status, argv.rename];
+    const allOptions = [argv.frequency, argv.locations, argv.uri, argv.status, argv.rename, argv.addemail, argv.rmemail];
 
     if (_.every(allOptions, _.isNil)) {
         throw new Error('Error: No changes specified');
@@ -71,7 +79,9 @@ exports.handler = function (argv) {
             argv.locations,
             argv.uri,
             argv.status,
-            argv.rename
+            argv.rename,
+            argv.addemail,
+            argv.rmemail
         );
     } else if (!_.isNil(argv.name)) {
         changeConfigOrchestrator.changeConfigurationByName(
@@ -80,7 +90,9 @@ exports.handler = function (argv) {
             argv.locations,
             argv.uri,
             argv.status,
-            argv.rename
+            argv.rename,
+            argv.addemail,
+            argv.rmemail
         );
     }
 }
