@@ -35,6 +35,11 @@ exports.builder = {
         alias: 'u',
         desc: 'URI for synthetic (required for SIMPLE and BROWSER synthetics)',
         type: 'string'
+    },
+    emails: {
+        alias: 'e',
+        desc: 'Emails to send synthetic alerts to (can be specified multiple times)',
+        type: 'array',
     }
 }
 
@@ -77,6 +82,7 @@ exports.handler = function (argv) {
         argv.frequency,
         argv.filename,
         null,
-        argv.uri
+        argv.uri,
+        argv.emails
     );
 }
