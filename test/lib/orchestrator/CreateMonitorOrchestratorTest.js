@@ -189,4 +189,70 @@ describe('CreateMonitorOrchestrator', function () {
 
         syntheticsFileServiceMock.exists.should.not.have.been.called;
     });
+
+    it ('should call into new relic for adding alerting', function () {
+        const expectedId = 'syntheticId';
+        const alertEmails = ['email@domain.com'];
+
+        const syntheticsFileServiceMock = {
+            exists: td.function(),
+            createFile: td.function()
+        };
+
+        const newRelicServiceMock = {
+            createSynthetic: td.function(),
+            addAlertEmails: td.function()
+        };
+
+        td.when(newRelicServiceMock.createSynthetic(
+            td.matchers.isA(String),
+            td.matchers.isA(Array),
+            td.matchers.isA(Number),
+            td.matchers.isA(String),
+            td.matchers.isA(String),
+            td.callback,
+            td.matchers.anything()
+        )).thenCallback('http://newrelic/' + expectedId);
+        td.when(syntheticsFileServiceMock.exists(
+            td.matchers.isA(String), 
+            td.callback
+        )).thenCallback(true);
+        td.when(syntheticsListFileServiceMock.addSynthetic(
+            td.matchers.isA(String),
+            td.matchers.isA(String),
+            td.matchers.isA(String),
+            td.callback
+        )).thenCallback();
+        td.when(newRelicServiceMock.addAlertEmails(
+            td.matchers.isA(String),
+            td.matchers.isA(Array),
+            td.callback
+        )).thenCallback();
+
+        const createMonitorOrchestrator = createMonitorOrchestratorFactory(
+            syntheticsFileServiceMock,
+            newRelicServiceMock,
+            syntheticsListFileServiceMock,
+            defaultsMock
+        );
+
+        createMonitorOrchestrator.createNewMonitor(monitorName, locations, type, frequency, expectedFilename,  () => {
+            newRelicServiceMock.createSynthetic.should.have.been.calledWith(
+                monitorName,
+                locations,
+                frequency,
+                'ENABLED',
+                type,
+                td.callback,
+                null
+            );
+            newRelicServiceMock.addAlertEmails.should.have.been.calledWith(
+                expectedId,
+                alertEmails,
+                td.callback
+            );
+        }, 
+        null, 
+        alertEmails);
+    });
 });
