@@ -14,6 +14,7 @@ describe('NewRelicService', () => {
     const expectedFrequency = 10;
     const expectedStatus = 'DISABLED';
     const expectedUrl = 'http://newrelic/id';
+    const expectedType = 'SCRIPTED_BROWSER';
 
     const requestMock = {
         write: td.function(),
@@ -42,6 +43,7 @@ describe('NewRelicService', () => {
             expectedLocations,
             expectedFrequency,
             expectedStatus,
+            expectedType,
             (syntheticUrl) => {
                 syntheticUrl.should.equals(expectedUrl);
             }
@@ -72,6 +74,7 @@ describe('NewRelicService', () => {
             expectedLocations,
             expectedFrequency,
             expectedStatus,
+            expectedType,
             (syntheticUrl, err) => {
                 err.should.equal(expectedStatusMessage);
             }
@@ -106,16 +109,21 @@ describe('NewRelicService', () => {
         const expectedId = 'syntheticId';
         const expectedContent = 'new relic synthetic content';
         const expectedStatusCode = 500;
+        const errorMessage = 'error updating synthetic';
+        const errorHtml = '<p>' + errorMessage + '</p>';
 
         const requestMock = td.function();
         const responseMock = {
-            statusCode: expectedStatusCode
+            statusCode: expectedStatusCode,
+            headers: {
+                'content-type': 'other'
+            }
         };
 
         td.when(requestMock(
             td.matchers.isA(Object),
             td.callback
-        )).thenCallback(null, responseMock);
+        )).thenCallback(null, responseMock, errorHtml);
 
         const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
 
@@ -123,7 +131,7 @@ describe('NewRelicService', () => {
             expectedId,
             expectedContent,
             (err) => {
-                err.should.equal('Error updating code for synthetic: ' + expectedStatusCode);
+                err.should.equal('Error updating code for synthetic: ' + expectedStatusCode + '; Unknown Error');
             }
         );
     });
@@ -150,21 +158,26 @@ describe('NewRelicService', () => {
         const expectedStatusCode = 404;
         const expectedSyntheticId = 'syntheticId';
         const expectedError = 'Error retrieving synthetic: '  + expectedStatusCode;
+        const errorMessage = 'Cannot find synthetic';
+        const errorHtml = '<p>' + errorMessage + '</p>';
 
         const requestMock = td.function();
         const responseMock = {
-            statusCode: expectedStatusCode
+            statusCode: expectedStatusCode,
+            headers: {
+                'content-type': 'text/html'
+            }
         };
 
         td.when(requestMock(
             td.matchers.isA(Object),
             td.callback
-        )).thenCallback(null, responseMock);
+        )).thenCallback(null, responseMock, errorHtml);
 
         const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
 
         newRelicService.getSynthetic(expectedSyntheticId, (body, err) => {
-            err.should.be.equal(expectedError);
+            err.should.be.equal(expectedError + '; New Relic Response : ' + errorMessage);
         });
     });
 
@@ -252,6 +265,285 @@ describe('NewRelicService', () => {
 
         newRelicService.getMonitorScript(expectedSyntheticId, (content, err) => {
             err.should.equal(expectedError);
+        });
+    });
+
+    it ('should fail to create a SIMPLE synthetic without a uri', () => {
+        const type = 'SIMPLE';
+        const requestMock = td.function();
+        const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
+
+        newRelicService.createSynthetic(
+            expectedName,
+            expectedLocations,
+            expectedFrequency,
+            expectedStatus,
+            type,
+            (syntheticUrl, err) => {
+                err.should.equals('Error: Missing uri parameter');
+            }
+        );
+    });
+
+    it ('should fail to create a BROWSER synthetic without a uri', () => {
+        const type = 'BROWSER';
+        const requestMock = td.function();
+        const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
+
+        newRelicService.createSynthetic(
+            expectedName,
+            expectedLocations,
+            expectedFrequency,
+            expectedStatus,
+            type,
+            (syntheticUrl, err) => {
+                err.should.equals('Error: Missing uri parameter');
+            }
+        );
+    });
+
+    it ('should POST to NR when creating a SIMPLE synthetic', () => {
+        const type = 'SIMPLE';
+        const uri = 'http://simple.uri.com/';
+
+        const responseMock = {
+            statusCode: 201,
+            headers: {
+                location: expectedUrl
+            }
+        };
+
+        const requestMock = td.function();
+
+        td.when(requestMock(
+            td.matchers.isA(Object),
+            td.callback
+        )).thenCallback(null, responseMock);
+
+        const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
+
+        newRelicService.createSynthetic(
+            expectedName,
+            expectedLocations,
+            expectedFrequency,
+            expectedStatus,
+            type,
+            (syntheticUrl) => {
+                syntheticUrl.should.equals(expectedUrl);
+            },
+            uri
+        );
+    });
+
+    it ('should GET to NR when listing locations', () => {
+        const expectedLocationsList = JSON.stringify({ locations: "list of locations" });
+        const responseMock = {
+            statusCode: 200
+        };
+
+        const requestMock = td.function();
+
+        td.when(requestMock(
+            td.matchers.isA(Object),
+            td.callback
+        )).thenCallback(null, responseMock, expectedLocationsList);
+
+        const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
+
+        newRelicService.getAvailableLocations(
+            (err, locationsList) => {
+                JSON.stringify(locationsList).should.be.equal(expectedLocationsList);
+            }
+        );
+    });
+
+    it ('should fail if NR throws an error when getting locations', () => {
+        const errorMessage = 'error getting locations';
+
+        const responseMock = {
+            statusCode: 500,
+            headers: {
+                'content-type': 'application/json'
+            }
+        };
+
+        const expectedBody = JSON.stringify({errors: [{error: errorMessage}]});
+
+        const requestMock = td.function();
+
+        td.when(requestMock(
+            td.matchers.isA(Object),
+            td.callback
+        )).thenCallback(null, responseMock, expectedBody);
+
+        const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
+
+        newRelicService.getAvailableLocations(
+            (err, locationsList) => {
+                err.should.be.equal('Error getting location values synthetic: 500; New Relic Response : ' + errorMessage);
+            }
+        );
+    });
+
+    it ('should PATCH to NR when changing configuration', () => {
+        const expectedId = 'syntheticId';
+        const frequency = 5;
+        const locations = ['location1', 'location2'];
+        const uri = 'http://theuri.com';
+        const status = 'ENABLED';
+        const newName = 'syntheticName';
+        const responseMock = {
+            statusCode: 204
+        };
+
+        const requestMock = td.function();
+
+        td.when(requestMock(
+            td.matchers.isA(Object),
+            td.callback
+        )).thenCallback(null, responseMock, null);
+
+        const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
+
+        newRelicService.updateMonitorSettings(
+            expectedId,
+            frequency,
+            locations,
+            uri,
+            status,
+            newName,
+            (err) => {
+                requestMock.should.have.been.calledWith(
+                    td.matchers.isA(Object),
+                    td.callback
+                );
+            }
+        );
+    });
+
+    it ('should return error when NR errors on synthetic config change', () => {
+        const expectedId = 'syntheticId';
+        const frequency = 5;
+        const locations = null;
+        const uri = 'http://theuri.com';
+        const status = null;
+        const newName = 'syntheticName';
+        const expectedError = 'error changing synthetic config';
+        const responseMock = {
+            statusCode: 500
+        };
+
+        const requestMock = td.function();
+
+        td.when(requestMock(
+            td.matchers.isA(Object),
+            td.callback
+        )).thenCallback(expectedError, responseMock, null);
+
+        const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
+
+        newRelicService.updateMonitorSettings(
+            expectedId,
+            frequency,
+            locations,
+            uri,
+            status,
+            newName,
+            (err) => {
+                err.should.be.equal(expectedError);
+            }
+        );
+    });
+
+    it ('should POST to NR when adding alert emails', () => {
+        const expectedId = 'syntheticId';
+        const expectedEmails = ['email1@email.com', 'email2@email.com'];
+        const responseMock = {
+            statusCode: 204
+        };
+
+        const requestMock = td.function();
+
+        td.when(requestMock(
+            td.matchers.isA(Object),
+            td.callback
+        )).thenCallback(null, responseMock, null);
+
+        const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
+
+        newRelicService.addAlertEmails(expectedId, expectedEmails, (err) => {
+            requestMock.should.have.been.calledWith(
+                td.matchers.isA(Object),
+                td.callback
+            );
+        });
+    });
+
+    it ('should return error when NR errors on adding emails', () => {
+        const expectedId = 'syntheticId';
+        const expectedEmails = ['email1@email.com', 'email2@email.com'];
+        const expectedError = 'error changing synthetic config';
+        const responseMock = {
+            statusCode: 500
+        };
+
+        const requestMock = td.function();
+
+        td.when(requestMock(
+            td.matchers.isA(Object),
+            td.callback
+        )).thenCallback(expectedError, responseMock, null);
+
+        const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
+
+        newRelicService.addAlertEmails(expectedId, expectedEmails, (err) => {
+            err.should.be.equal(expectedError);
+        });
+    });
+
+    it ('should POST to NR when removing alert emails', () => {
+        const expectedId = 'syntheticId';
+        const expectedEmail = 'email1@email.com';
+        const responseMock = {
+            statusCode: 204
+        };
+
+        const requestMock = td.function();
+
+        td.when(requestMock(
+            td.matchers.isA(Object),
+            td.callback
+        )).thenCallback(null, responseMock, null);
+
+        const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
+
+        newRelicService.removeAlertEmail(expectedId, expectedEmail, (err) => {
+            requestMock.should.have.been.calledWith(
+                td.matchers.isA(Object),
+                td.callback
+            );
+        });
+    });
+
+    it ('should return error when NR errors on removing emails', () => {
+        const expectedId = 'syntheticId';
+        const expectedEmail = 'email1@email.com';
+        const expectedError = 'error changing synthetic config';
+        const responseMock = {
+            statusCode: 500
+        };
+
+        const requestMock = td.function();
+
+        td.when(requestMock(
+            td.matchers.isA(Object),
+            td.callback
+        )).thenCallback(expectedError, responseMock, null);
+
+        const newRelicService = newRelicServiceFactory(expectedApiKey, requestMock);
+
+        newRelicService.removeAlertEmail(expectedId, expectedEmail, (err) => {
+            err.should.be.equal(expectedError);
         });
     });
 });
