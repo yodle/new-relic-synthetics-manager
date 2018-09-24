@@ -17,14 +17,14 @@ gulp.task('pre-test', () => {
     .pipe(istanbul.hookRequire());
 })
 
-gulp.task('test', ['pre-test'], () => {
+gulp.task('test', gulp.series('pre-test', () => {
   return gulp.src('./test/**/*.js')
     .pipe(mocha({reporter: 'spec' }))
     // Ugly hack because the mocha plugin doesn't properly exit with an exit code on test failures
     .on('error', (err) => { process.exit(1) })
     .pipe(istanbul.writeReports())
     .pipe(istanbul.enforceThresholds({ thresholds: { global: 90 } }));
-});
+}));
 
 
-gulp.task('default', ['lint', 'test']);
+gulp.task('default', gulp.series('lint', 'test'));
